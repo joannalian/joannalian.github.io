@@ -432,8 +432,20 @@ init();
 
 <script type="text/babel">
 const { useMemo, useRef, useEffect, useState } = React;
+
 const FM = window.framerMotion || window.FramerMotion || window['framer-motion'] || {};
-const { motion, useScroll, useSpring, useTransform, useReducedMotion } = FM;
+// ---- Safe fallbacks so page won't crash even if FM UMD isn't found ----
+const _noopSpring = (initial=0)=>({ get: ()=> (typeof initial==='object' && initial && typeof initial.get==='function' ? initial.get() : initial), set: ()=>{} });
+
+const motion = FM.motion || new Proxy({}, { get: (_, tag) => {
+  return ({children, ...rest}) => React.createElement(tag, rest, children);
+}});
+
+const useScroll = FM.useScroll || (()=>({ scrollYProgress: _noopSpring(0) }));
+const useSpring = FM.useSpring || ((val)=> _noopSpring(val && typeof val.get==='function' ? val.get() : 0));
+const useTransform = FM.useTransform || ((val)=> val);
+const useReducedMotion = FM.useReducedMotion || (()=> false);
+
 
 // ---- Minimal UI primitives ----
 function Card({ children, className="" }) { return <div className={`rounded-2xl border border-slate-200/80 bg-white/90 shadow-lg backdrop-blur ${className}`}>{children}</div>; }
