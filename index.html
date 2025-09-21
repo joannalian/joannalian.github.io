@@ -61,6 +61,8 @@
   <!-- Babel Standalone to compile JSX in browser -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+  <!-- v11 timeline styles -->
+  <link rel="stylesheet" href="./timeline_v11.css">
 </head>
 <body>
   <div class="container">
@@ -615,6 +617,24 @@ function mountTimeline(){
 window.renderTimeline = mountTimeline;
 document.addEventListener("DOMContentLoaded", ()=>{ try { mountTimeline(); } catch (e) { console.error(e); } });
 </script>
+
+
+<script type="text/babel">
+  // v11 wrapper：若有載入 AnimatedCareerTimeline（UMD），則優先用它；否則沿用原本 Timeline 元件
+  (function(){
+    if (!window.Timeline) return;
+    const OriginalTimeline = window.Timeline;
+    window.Timeline = function WrappedTimeline(props){
+      const Comp = window.AnimatedCareerTimeline || OriginalTimeline;
+      const p = (Comp === OriginalTimeline) ? props : { items: props.events, events: props.events };
+      return React.createElement(Comp, p);
+    };
+  })();
+</script>
+
+
+<!-- v11 component (UMD via Babel) -->
+<script type="text/babel" data-presets="env,react" src="./AnimatedCareerTimeline_umd_v11.jsx"></script>
 
 </body>
 </html>
