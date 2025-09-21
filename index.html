@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>互動式履歷—四入口 Tabs 版型 v6</title>
 <style>
   :root{
@@ -50,157 +51,150 @@
   .two-col{display:grid;grid-template-columns:1fr;gap:12px}
   @media(min-width:900px){.two-col{grid-template-columns:1fr 1fr}}
 </style>
+<!-- React + ReactDOM UMD -->
+<script crossorigin="" src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin="" src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<!-- Framer Motion UMD -->
+<script crossorigin="" src="https://unpkg.com/framer-motion@11/dist/framer-motion.umd.js"></script>
+<!-- Tailwind (for utility classes used by the component) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Babel Standalone to compile JSX in browser -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- React + ReactDOM UMD -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <!-- Framer Motion UMD -->
-  <script crossorigin src="https://unpkg.com/framer-motion@11/dist/framer-motion.umd.js"></script>
-  <!-- Tailwind (for utility classes used by the component) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Babel Standalone to compile JSX in browser -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
 
+  <link href="./timeline.css" rel="stylesheet"/>
 </head>
 <body>
-  <div class="container">
-    <!-- HERO -->
-    <section class="card">
-      <div class="hero">
-        <div>
-          <h1 id="nameTitle">你的名字｜PM Leader × Lean × Data</h1>
-          <div class="muted small">把 TPS 思維轉譯為可落地的數位方法，打造「能持續運作」的導入體系。</div>
-          <div style="margin-top:10px">
-            <span class="tag">Email</span> <a id="emailLink" href="mailto:you@example.com" class="small">you@example.com</a>　
-            <span class="tag">LinkedIn</span> <a href="#" class="small">linkedin.com/in/your-id</a>　
-            <span class="tag">GitHub</span> <a href="#" class="small">github.com/your-id</a>
-          </div>
-        </div>
-        <div class="small muted">可放置頭像</div>
-      </div>
-    </section>
-
-    <!-- 亮點入口：僅放大這裡的圖示 -->
-    <section class="card">
-      <div class="section-title"><img class="inline-icon" src="girl.png" alt="icon">重點入口</div>
-      <div class="grid4">
-        <div class="entry" data-target="current">
-          <h3><img class="entry-icon" src="girl.png" alt="現職工作內容">現職工作內容</h3>
-          <p>工作範疇、責任、使用工具與價值主張。</p>
-        </div>
-        <div class="entry" data-target="skills">
-          <h3><img class="entry-icon" src="logical-thinking.png" alt="技能">技能</h3>
-          <p>能力矩陣、技能分類與標籤。</p>
-        </div>
-        <div class="entry" data-target="achievements">
-          <h3><img class="entry-icon" src="arrow.png" alt="成就亮點">成就亮點</h3>
-          <p>代表性專案、里程碑與互動圖表。</p>
-        </div>
-        <div class="entry" data-target="timeline">
-          <h3><img class="entry-icon" src="timeline.png" alt="職涯時間軸">職涯時間軸</h3>
-          <p>從 0 → 1 的歷程、重要里程碑。</p>
-        </div>
-      </div>
-    </section>
-
-    <hr class="divider">
-
-    <!-- Tabs（維持小尺寸 18px，不放大） -->
-    <nav class="tabs">
-      <button class="tab active" data-tab="current">
-        <img class="tab-icon" src="girl.png" alt="現職工作內容 icon" loading="lazy"/>
+<div class="container">
+<!-- HERO -->
+<section class="card">
+<div class="hero">
+<div>
+<h1 id="nameTitle">你的名字｜PM Leader × Lean × Data</h1>
+<div class="muted small">把 TPS 思維轉譯為可落地的數位方法，打造「能持續運作」的導入體系。</div>
+<div style="margin-top:10px">
+<span class="tag">Email</span> <a class="small" href="mailto:you@example.com" id="emailLink">you@example.com</a>　
+            <span class="tag">LinkedIn</span> <a class="small" href="#">linkedin.com/in/your-id</a>　
+            <span class="tag">GitHub</span> <a class="small" href="#">github.com/your-id</a>
+</div>
+</div>
+<div class="small muted">可放置頭像</div>
+</div>
+</section>
+<!-- 亮點入口：僅放大這裡的圖示 -->
+<section class="card">
+<div class="section-title"><img alt="icon" class="inline-icon" src="girl.png"/>重點入口</div>
+<div class="grid4">
+<div class="entry" data-target="current">
+<h3><img alt="現職工作內容" class="entry-icon" src="girl.png"/>現職工作內容</h3>
+<p>工作範疇、責任、使用工具與價值主張。</p>
+</div>
+<div class="entry" data-target="skills">
+<h3><img alt="技能" class="entry-icon" src="logical-thinking.png"/>技能</h3>
+<p>能力矩陣、技能分類與標籤。</p>
+</div>
+<div class="entry" data-target="achievements">
+<h3><img alt="成就亮點" class="entry-icon" src="arrow.png"/>成就亮點</h3>
+<p>代表性專案、里程碑與互動圖表。</p>
+</div>
+<div class="entry" data-target="timeline">
+<h3><img alt="職涯時間軸" class="entry-icon" src="timeline.png"/>職涯時間軸</h3>
+<p>從 0 → 1 的歷程、重要里程碑。</p>
+</div>
+</div>
+</section>
+<hr class="divider"/>
+<!-- Tabs（維持小尺寸 18px，不放大） -->
+<nav class="tabs">
+<button class="tab active" data-tab="current">
+<img alt="現職工作內容 icon" class="tab-icon" loading="lazy" src="girl.png">
         現職工作內容 <span class="count" id="count-current"></span>
-      </button>
-      <button class="tab" data-tab="skills">
-        <img class="tab-icon" src="logical-thinking.png" alt="技能 icon" loading="lazy"/>
+</img></button>
+<button class="tab" data-tab="skills">
+<img alt="技能 icon" class="tab-icon" loading="lazy" src="logical-thinking.png">
         技能 <span class="count" id="count-skills"></span>
-      </button>
-      <button class="tab" data-tab="achievements">
-        <img class="tab-icon" src="arrow.png" alt="成就亮點 icon" loading="lazy"/>
+</img></button>
+<button class="tab" data-tab="achievements">
+<img alt="成就亮點 icon" class="tab-icon" loading="lazy" src="arrow.png">
         成就亮點 <span class="count" id="count-achv"></span>
-      </button>
-      <button class="tab" data-tab="timeline">
-        <img class="tab-icon" src="timeline.png" alt="職涯時間軸 icon" loading="lazy"/>
+</img></button>
+<button class="tab" data-tab="timeline">
+<img alt="職涯時間軸 icon" class="tab-icon" loading="lazy" src="timeline.png">
         職涯時間軸 <span class="count" id="count-time"></span>
-      </button>
-    </nav>
-
-    <!-- Panels -->
-    <section id="panel-current" class="card">
-      <div class="section-title"><img class="inline-icon" src="girl.png" alt="">現職工作內容</div>
-      <div id="currentHeader" class="ach"></div>
-      <div class="two-col">
-        <div class="ach">
-          <h4>工作範疇</h4>
-          <ul id="scopeList" class="list"></ul>
-        </div>
-        <div class="ach">
-          <h4>主要責任</h4>
-          <ul id="respList" class="list"></ul>
-        </div>
-      </div>
-      <div style="height:8px"></div>
-      <div class="ach">
-        <h4>使用工具 / 方法</h4>
-        <div id="toolTags" class="row"></div>
-      </div>
-      <div class="ach">
-        <h4>價值主張</h4>
-        <ul id="valueList" class="list"></ul>
-      </div>
-    </section>
-
-    <section id="panel-skills" class="card hidden">
-      <div class="section-title"><img class="inline-icon" src="logical-thinking.png" alt="">技能</div>
-      <div id="skillMatrix" class="row" style="gap:8px"></div>
-    </section>
-
-    <section id="panel-achievements" class="card hidden">
-      <div class="section-title"><img class="inline-icon" src="arrow.png" alt="">成就亮點</div>
-      <div class="row" style="align-items:flex-end;justify-content:space-between">
-        <div class="row">
-          <div class="small muted">角色：</div>
-          <div id="rolePills" class="row"></div>
-          <div class="small muted" style="margin-left:10px">技能：</div>
-          <div id="skillPills" class="row"></div>
-        </div>
-        <div class="row">
-          <div class="small muted">關鍵字</div>
-          <input id="q" type="text" placeholder="輸入關鍵字…" style="padding:6px 8px;border:1px solid var(--border);border-radius:10px">
-          <button id="resetBtn" class="tab" style="border-radius:10px">重置</button>
-        </div>
-      </div>
-      <div id="achList"></div>
-      <div id="achEmpty" class="muted small" style="display:none">沒有符合篩選的成就。</div>
-      <div style="height:8px"></div>
-      <div class="grid4" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:16px">
-        <div class="card">
-          <div class="section-title">技能分佈</div>
-          <svg id="barChart" viewBox="0 0 640 320" width="100%" height="260" role="img" aria-label="技能分佈長條圖"></svg>
-        </div>
-        <div class="card">
-          <div class="section-title">角色占比</div>
-          <svg id="pieChart" viewBox="0 0 320 320" width="100%" height="260" role="img" aria-label="角色占比圓餅圖"></svg>
-        </div>
-        <div class="card">
-          <div class="section-title">提示</div>
-          <div class="small muted">點擊上方的角色/技能標籤或輸入關鍵字，會即時篩選下方清單與圖表。</div>
-        </div>
-        <div class="card">
-          <div class="section-title">備註</div>
-          <div class="small muted">僅「重點入口」卡的圖示放大；Tabs 與區塊標題維持 18px。</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="panel-timeline" class="card hidden">
-      <div class="section-title"><img class="inline-icon" src="timeline.png" alt="">職涯時間軸</div>
-      <div id="timeline"></div>
-    </section>
-
-    <footer>© 2025 Resume Tabs v6（離線版）</footer>
-  </div>
-
+</img></button>
+</nav>
+<!-- Panels -->
+<section class="card" id="panel-current">
+<div class="section-title"><img alt="" class="inline-icon" src="girl.png"/>現職工作內容</div>
+<div class="ach" id="currentHeader"></div>
+<div class="two-col">
+<div class="ach">
+<h4>工作範疇</h4>
+<ul class="list" id="scopeList"></ul>
+</div>
+<div class="ach">
+<h4>主要責任</h4>
+<ul class="list" id="respList"></ul>
+</div>
+</div>
+<div style="height:8px"></div>
+<div class="ach">
+<h4>使用工具 / 方法</h4>
+<div class="row" id="toolTags"></div>
+</div>
+<div class="ach">
+<h4>價值主張</h4>
+<ul class="list" id="valueList"></ul>
+</div>
+</section>
+<section class="card hidden" id="panel-skills">
+<div class="section-title"><img alt="" class="inline-icon" src="logical-thinking.png"/>技能</div>
+<div class="row" id="skillMatrix" style="gap:8px"></div>
+</section>
+<section class="card hidden" id="panel-achievements">
+<div class="section-title"><img alt="" class="inline-icon" src="arrow.png"/>成就亮點</div>
+<div class="row" style="align-items:flex-end;justify-content:space-between">
+<div class="row">
+<div class="small muted">角色：</div>
+<div class="row" id="rolePills"></div>
+<div class="small muted" style="margin-left:10px">技能：</div>
+<div class="row" id="skillPills"></div>
+</div>
+<div class="row">
+<div class="small muted">關鍵字</div>
+<input id="q" placeholder="輸入關鍵字…" style="padding:6px 8px;border:1px solid var(--border);border-radius:10px" type="text"/>
+<button class="tab" id="resetBtn" style="border-radius:10px">重置</button>
+</div>
+</div>
+<div id="achList"></div>
+<div class="muted small" id="achEmpty" style="display:none">沒有符合篩選的成就。</div>
+<div style="height:8px"></div>
+<div class="grid4" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:16px">
+<div class="card">
+<div class="section-title">技能分佈</div>
+<svg aria-label="技能分佈長條圖" height="260" id="barChart" role="img" viewbox="0 0 640 320" width="100%"></svg>
+</div>
+<div class="card">
+<div class="section-title">角色占比</div>
+<svg aria-label="角色占比圓餅圖" height="260" id="pieChart" role="img" viewbox="0 0 320 320" width="100%"></svg>
+</div>
+<div class="card">
+<div class="section-title">提示</div>
+<div class="small muted">點擊上方的角色/技能標籤或輸入關鍵字，會即時篩選下方清單與圖表。</div>
+</div>
+<div class="card">
+<div class="section-title">備註</div>
+<div class="small muted">僅「重點入口」卡的圖示放大；Tabs 與區塊標題維持 18px。</div>
+</div>
+</div>
+</section>
+<section class="card hidden" id="panel-timeline">
+<div class="section-title"><img alt="" class="inline-icon" src="timeline.png"/>職涯時間軸</div>
+<div id="timeline"></div>
+</section>
+<footer>© 2025 Resume Tabs v6（離線版）</footer>
+</div>
 <script>
 // ===== 1) Data =====
 const DATA = {
@@ -424,12 +418,9 @@ function init(){
 }
 init();
 </script>
-
-
 <script>
   window.CAREER_EVENTS = [{"id": "1", "date": "2014-01-01", "title": "資訊專員", "org": "中良工業股份有限公司", "location": "", "type": "job", "description": "Agentflow、Moodle教學平台架設與維護", "tags": [], "highlights": ["獨立開發: 入職後約3個月可獨立開發完整BPM專案流程至產出", "跨領域開發:結合開發BPM專案，可自APP紀錄資料自動傳送至BPM簽核。"], "linkUrl": ""}, {"id": "2", "date": "2016-01-01", "title": "SAP工程師", "org": "中良工業股份有限公司", "location": "", "type": "job", "description": "負責台灣廠區SAP-FI財務模組導入及維運", "tags": [], "highlights": ["大量開發FI相關報表包含應收AR、應付AP、固定資產FA、總帳GL及月結、年結所需相關報表。", "跨模組開發-MM採購與庫存模組: 優化採購與庫存流程，有效節省採購/倉會人員用於查詢報表的時間避免錯誤資料。", "跨模組開發-PP生產模組&MM採購與庫存模組: 生產線上流程優化-工單自動發料", "財務分析表-依據公開資訊觀測站/採IFRSs後，提供一份與上市櫃公司等同之財務分析。"], "linkUrl": ""}, {"id": "3", "date": "2019-01-01", "title": "SAP工程師", "org": "中良工業股份有限公司", "location": "", "type": "job", "description": "1.負責台灣廠區SAP-FI財務模組及CO成本模組導入及維運\n2.負責越南廠區SAP-FI財務模組及CO成本模組導入及維運", "tags": [], "highlights": ["獨立開發越南區SAP導入-FI模組發票系統GUI-VAT，產出相關表單、發票等皆符合當地稅法規定，依台灣導入經驗開發此系統約節省成本約150-200萬效益", "越南區SAP導入-三角貿易流程梳理負責人: 整合SD銷售模組/MM採購與庫存模組/FI財務模組 三大模組，提供三角貿易與境外公司之公司間交易Solution的系統建議。", "跨模組-SD銷售模組: 負責信用額度功能上線，以顧問角色執行此專案，包含後台IMG設定、系統教育訓練、劇本測試等。"], "linkUrl": ""}, {"id": "4", "date": "2022-01-01", "title": "課長", "org": "中良工業股份有限公司", "location": "", "type": "job", "description": "1.負責台灣廠區SAP-FI財務模組及CO成本模組導入及維運\n2.負責越南廠區SAP-FI財務模組及CO成本模組導入及維運", "tags": [], "highlights": ["第三次SAP導入(越南新廠)-雙模組職責: 負責FI財務+CO成本模組導入。", "BI領域開發: 跨鼎新、文中、SAP系統整合各財務系統，做資料分析及擷取整合，開發產出集團內所有子公司整合之財報(損益表)。", "晉升課長，管理SAP Team"], "linkUrl": ""}, {"id": "5", "date": "2022-01-01", "title": "經理", "org": "以恩資訊股份有限公司", "location": "", "type": "job", "description": "Saas模式排程軟體導入專案經理", "tags": [], "highlights": ["新創企業開創期的成功案例: 在資源、知識背景皆尚未穩定時，完成第一個成功導入案例，於3個月內完成資料介接並導入系統，再3個月內完成有效企業營運改善，提升庫存周轉率5%、生產Lead Time下降25%(38天下降至10天)、換模時間下降15%(180分鐘下降至153分鐘)。"], "linkUrl": ""}, {"id": "6", "date": "2024-01-01", "title": "經理", "org": "以恩資訊股份有限公司", "location": "", "type": "job", "description": "1.Saas模式排程軟體導入專案經理\n2.擴張產品服務處團隊及人才培育\n3.建立可複製導入SOP，檢核團隊結案績效成效", "tags": [], "highlights": ["從零打造PM團隊: 目前PM團隊擴增人數約4位PM+1位專案助理，人才流失率低。", "建立可複製導入SOP，並與外部TPS顧問合作共同實施專案計畫，大幅降低PM訓練期。"], "linkUrl": ""}];
 </script>
-
 <script type="text/babel">
 const { useMemo, useRef, useEffect, useState } = React;
 const FM = window.framerMotion || window.FramerMotion || window['framer-motion'] || {};
@@ -616,5 +607,23 @@ window.renderTimeline = mountTimeline;
 document.addEventListener("DOMContentLoaded", ()=>{ try { mountTimeline(); } catch (e) { console.error(e); } });
 </script>
 
+<script data-presets="env,react" src="./AnimatedCareerTimeline_umd.jsx" type="text/babel"></script>
+<script type="text/babel">// v-bridge: prefer AnimatedCareerTimeline (Framer Motion) and wait for window.Timeline to exist
+(function waitAndPatch(){
+  let tries = 0;
+  function patch(){
+    if (!window.Timeline) { 
+      if (++tries < 120) return setTimeout(patch, 250); // 最多等 30 秒
+      return;
+    }
+    const OriginalTimeline = window.Timeline;
+    window.Timeline = function WrappedTimeline(props){
+      const Comp = window.AnimatedCareerTimeline || OriginalTimeline;
+      const p = (Comp === OriginalTimeline) ? props : { items: props.events || props.items || [] };
+      return React.createElement(Comp, p);
+    };
+  }
+  patch();
+})();</script>
 </body>
 </html>
