@@ -1,63 +1,620 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>互動式職涯時間軸</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>互動式履歷—四入口 Tabs 版型 v6</title>
+<style>
+  :root{
+    --bg:#ffffff; --text:#111827; --muted:#6b7280; --border:#e5e7eb; --pill:#f3f4f6; --accent:#111827;
+    --radius:16px; --shadow:0 6px 16px rgba(0,0,0,.06);
+    --entry-icon-size: 40px; /* ← 想再大或再小都改這裡 */
+  }
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Microsoft JhengHei",ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .container{max-width:1120px;margin:0 auto;padding:24px}
+  .muted{color:var(--muted)} .small{font-size:12px}
+  .card{border:1px solid var(--border);border-radius:var(--radius);padding:16px;background:#fff;box-shadow:var(--shadow)}
+  .hero{display:flex;gap:16px;align-items:center;justify-content:space-between}
+  .hero h1{font-size:28px;margin:0 0 4px 0}
+  .tag{display:inline-block;background:#eef2ff;color:#3730a3;padding:4px 10px;border-radius:999px;font-size:12px;margin-right:8px}
+  .grid4{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:1000px){.grid4{grid-template-columns:repeat(4,1fr)}}
+  .entry{border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;transition:transform .08s ease, box-shadow .15s ease}
+  .entry:hover{transform:translateY(-2px); box-shadow:0 10px 18px rgba(0,0,0,.07)}
+  .entry h3{margin:0 0 6px 0;font-size:18px; display:flex; align-items:center; gap:10px}
+  .entry p{margin:0;font-size:13px;color:var(--muted)}
+  .entry .entry-icon{width:var(--entry-icon-size); height:var(--entry-icon-size); object-fit:contain; flex:none}
 
-  <!-- React / ReactDOM UMD -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  /* Tabs */
+  .tabs{display:flex;gap:8px;overflow:auto;padding:6px}
+  .tab{position:relative; padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;font-size:14px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+  .tab.active{background:#111827;color:#fff;border-color:#111827}
+  .tab .count{font-size:11px;opacity:.9}
+  .tab-icon,.inline-icon{width:18px;height:18px;object-fit:contain;display:inline-block}
+  .hidden{display:none}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-block;padding:6px 10px;border:1px solid #d1d5db;border-radius:999px;background:#f3f4f6;font-size:12px;margin:2px}
+  .ach{border:1px solid var(--border);border-radius:14px;padding:12px;background:#fff;margin:8px 0}
+  .ach h4{margin:0 0 4px 0}
+  .axis text{font-size:12px;fill:#374151}
+  .bar{fill:#93c5fd}
+  .legend{font-size:12px;fill:#374151}
+  .kpi{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
+  .kpi .num{font-size:22px;font-weight:800}
+  .section-title{font-size:18px;font-weight:700;margin:0 0 10px 0; display:flex; align-items:center; gap:8px}
+  footer{color:#9ca3af;font-size:11px;margin:28px 0;text-align:center}
+  .divider{border:none;border-top:1px solid var(--border);margin:16px 0 20px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+  .list{padding-left:18px;margin:8px 0} .list li{margin:4px 0}
+  .two-col{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:900px){.two-col{grid-template-columns:1fr 1fr}}
+</style>
 
+  <!-- React + ReactDOM UMD -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <!-- Framer Motion UMD -->
-  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
-
-  <!-- Babel Standalone for JSX in browser -->
+  <script crossorigin src="https://unpkg.com/framer-motion@11/dist/framer-motion.umd.js"></script>
+  <!-- Tailwind (for utility classes used by the component) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Babel Standalone to compile JSX in browser -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="./timeline.css" />
-  <style>
-    body{font-family: system-ui,-apple-system,"Microsoft JhengHei",Segoe UI,Roboto,Helvetica,Arial; margin:0; background:#fff; color:#111827;}
-    .container{max-width:1120px; margin:0 auto; padding:24px;}
-    .card{border:1px solid #e5e7eb; border-radius:16px; padding:16px; background:#fff; box-shadow:0 6px 16px rgba(0,0,0,.06);}
-    h1{font-size:24px; margin:0 0 16px 0;}
-    .muted{color:#6b7280;}
-  </style>
 </head>
 <body>
   <div class="container">
-    <h1>職涯時間軸（React + Framer Motion, 單檔 / 無打包器）</h1>
-    <p class="muted">這頁面會讀取 <code>timeline.json</code>，並載入 <code>AnimatedCareerTimeline_umd.jsx</code>。</p>
-    <div id="timeline" class="card"></div>
+    <!-- HERO -->
+    <section class="card">
+      <div class="hero">
+        <div>
+          <h1 id="nameTitle">你的名字｜PM Leader × Lean × Data</h1>
+          <div class="muted small">把 TPS 思維轉譯為可落地的數位方法，打造「能持續運作」的導入體系。</div>
+          <div style="margin-top:10px">
+            <span class="tag">Email</span> <a id="emailLink" href="mailto:you@example.com" class="small">you@example.com</a>　
+            <span class="tag">LinkedIn</span> <a href="#" class="small">linkedin.com/in/your-id</a>　
+            <span class="tag">GitHub</span> <a href="#" class="small">github.com/your-id</a>
+          </div>
+        </div>
+        <div class="small muted">可放置頭像</div>
+      </div>
+    </section>
+
+    <!-- 亮點入口：僅放大這裡的圖示 -->
+    <section class="card">
+      <div class="section-title"><img class="inline-icon" src="girl.png" alt="icon">重點入口</div>
+      <div class="grid4">
+        <div class="entry" data-target="current">
+          <h3><img class="entry-icon" src="girl.png" alt="現職工作內容">現職工作內容</h3>
+          <p>工作範疇、責任、使用工具與價值主張。</p>
+        </div>
+        <div class="entry" data-target="skills">
+          <h3><img class="entry-icon" src="logical-thinking.png" alt="技能">技能</h3>
+          <p>能力矩陣、技能分類與標籤。</p>
+        </div>
+        <div class="entry" data-target="achievements">
+          <h3><img class="entry-icon" src="arrow.png" alt="成就亮點">成就亮點</h3>
+          <p>代表性專案、里程碑與互動圖表。</p>
+        </div>
+        <div class="entry" data-target="timeline">
+          <h3><img class="entry-icon" src="timeline.png" alt="職涯時間軸">職涯時間軸</h3>
+          <p>從 0 → 1 的歷程、重要里程碑。</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Tabs（維持小尺寸 18px，不放大） -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="current">
+        <img class="tab-icon" src="girl.png" alt="現職工作內容 icon" loading="lazy"/>
+        現職工作內容 <span class="count" id="count-current"></span>
+      </button>
+      <button class="tab" data-tab="skills">
+        <img class="tab-icon" src="logical-thinking.png" alt="技能 icon" loading="lazy"/>
+        技能 <span class="count" id="count-skills"></span>
+      </button>
+      <button class="tab" data-tab="achievements">
+        <img class="tab-icon" src="arrow.png" alt="成就亮點 icon" loading="lazy"/>
+        成就亮點 <span class="count" id="count-achv"></span>
+      </button>
+      <button class="tab" data-tab="timeline">
+        <img class="tab-icon" src="timeline.png" alt="職涯時間軸 icon" loading="lazy"/>
+        職涯時間軸 <span class="count" id="count-time"></span>
+      </button>
+    </nav>
+
+    <!-- Panels -->
+    <section id="panel-current" class="card">
+      <div class="section-title"><img class="inline-icon" src="girl.png" alt="">現職工作內容</div>
+      <div id="currentHeader" class="ach"></div>
+      <div class="two-col">
+        <div class="ach">
+          <h4>工作範疇</h4>
+          <ul id="scopeList" class="list"></ul>
+        </div>
+        <div class="ach">
+          <h4>主要責任</h4>
+          <ul id="respList" class="list"></ul>
+        </div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="ach">
+        <h4>使用工具 / 方法</h4>
+        <div id="toolTags" class="row"></div>
+      </div>
+      <div class="ach">
+        <h4>價值主張</h4>
+        <ul id="valueList" class="list"></ul>
+      </div>
+    </section>
+
+    <section id="panel-skills" class="card hidden">
+      <div class="section-title"><img class="inline-icon" src="logical-thinking.png" alt="">技能</div>
+      <div id="skillMatrix" class="row" style="gap:8px"></div>
+    </section>
+
+    <section id="panel-achievements" class="card hidden">
+      <div class="section-title"><img class="inline-icon" src="arrow.png" alt="">成就亮點</div>
+      <div class="row" style="align-items:flex-end;justify-content:space-between">
+        <div class="row">
+          <div class="small muted">角色：</div>
+          <div id="rolePills" class="row"></div>
+          <div class="small muted" style="margin-left:10px">技能：</div>
+          <div id="skillPills" class="row"></div>
+        </div>
+        <div class="row">
+          <div class="small muted">關鍵字</div>
+          <input id="q" type="text" placeholder="輸入關鍵字…" style="padding:6px 8px;border:1px solid var(--border);border-radius:10px">
+          <button id="resetBtn" class="tab" style="border-radius:10px">重置</button>
+        </div>
+      </div>
+      <div id="achList"></div>
+      <div id="achEmpty" class="muted small" style="display:none">沒有符合篩選的成就。</div>
+      <div style="height:8px"></div>
+      <div class="grid4" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="section-title">技能分佈</div>
+          <svg id="barChart" viewBox="0 0 640 320" width="100%" height="260" role="img" aria-label="技能分佈長條圖"></svg>
+        </div>
+        <div class="card">
+          <div class="section-title">角色占比</div>
+          <svg id="pieChart" viewBox="0 0 320 320" width="100%" height="260" role="img" aria-label="角色占比圓餅圖"></svg>
+        </div>
+        <div class="card">
+          <div class="section-title">提示</div>
+          <div class="small muted">點擊上方的角色/技能標籤或輸入關鍵字，會即時篩選下方清單與圖表。</div>
+        </div>
+        <div class="card">
+          <div class="section-title">備註</div>
+          <div class="small muted">僅「重點入口」卡的圖示放大；Tabs 與區塊標題維持 18px。</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-timeline" class="card hidden">
+      <div class="section-title"><img class="inline-icon" src="timeline.png" alt="">職涯時間軸</div>
+      <div id="timeline"></div>
+    </section>
+
+    <footer>© 2025 Resume Tabs v6（離線版）</footer>
   </div>
 
-  <!-- 你的 UMD 版元件（由 Babel 編譯） -->
-  <script type="text/babel" data-presets="env,react" src="./AnimatedCareerTimeline_umd.jsx"></script>
+<script>
+// ===== 1) Data =====
+const DATA = {
+  profile: { name: "你的名字", title: "PM Leader × Lean × Data", email: "you@example.com" },
+  current: {
+    company: "LeanPlay（新創）",
+    title: "PM 主管 / 資料分析",
+    period: "2023.03 – 至今",
+    summary: "主導 PM 團隊制度化，建立導入方法與人才培育體系；以 TPS × PDCA 推動落地。",
+    scopes: ["PM 組織與職能建立（0→1）","跨部門導入與流程設計（Jira / ERP / APS）","數據可視化與 KPI 設計（BI）"],
+    responsibilities: ["定義導入標準架構與決策節點，確保『第一站正確』","建立選才基準線與教練式培養機制，形成可複製的人才體系","持續 PDCA：允許 rough data 上線，快速試錯並收斂"],
+    tools: ["Jira","ERP（LRP/MRP）","APS","BI","PDCA","TPS","React"],
+    valueProps: ["把抽象的 TPS 轉譯為可落地的導入方法","縮短導入前期卡關時間，提升落地速度與穩定性","在產品市場化與 TPS 精神之間取得平衡"]
+  },
+  skillMatrix: [
+    { cat:"PM 能力", items:["專案規劃","流程設計","跨部門協作","風險控管"] },
+    { cat:"Lean / TPS", items:["VSM","拉動系統","WIP 控制","改善提案"] },
+    { cat:"Data / BI", items:["資料建模","可視化設計","KPI 設計","指標追蹤"] },
+    { cat:"Web", items:["React","Next","API 設計","前後端協作"] }
+  ],
+  roles: [{ id:"pm", name:"專案經理 (PM)" },{ id:"lead", name:"PM 主管 / 團隊領導" },{ id:"ba", name:"商業分析 / 資料分析" }],
+  skills: [{ id:"tps", name:"TPS / 精實" },{ id:"jira", name:"Jira / 專案追蹤" },{ id:"erp", name:"ERP (LRP/MRP)" },{ id:"bi", name:"BI / 視覺化" },{ id:"web", name:"Web（React/Next）" },{ id:"pdca", name:"PDCA" },{ id:"aps", name:"APS / 排程" }],
+  achievements:[
+    { id:"a1", title:"從零建立 PM 團隊與選才培養機制", period:"2023–2025", roles:["lead","pm"], skills:["jira","erp","bi"], bullets:["建立選才基準線與教練式培養機制（大 PM 帶小 PM）","設計專業驗證題庫（含 ERP LRP/MRP），導入 AI 輔助面試分析","提升團隊留存與交付穩定性，形成可複製的人才發展體系"] },
+    { id:"a2", title:"建立導入標準架構，強化跨部門同步與透明化", period:"2023–2025", roles:["pm","lead"], skills:["jira","pdca","aps","tps"], bullets:["Jira 作為 PM/RD/管理層共用平台，形成共通語言","小步試驗 + PDCA：允許 rough data 上線，循環優化","『第一站正確』原則降低 WIP 與返工"] },
+    { id:"a3", title:"第一線需求把關：平衡 TPS 精神與產品市場化", period:"2023–2025", roles:["ba","pm"], skills:["tps","aps","bi"], bullets:["建立需求決策框架（TPS 符合性 / 可複製性 / 市場化）","推動具市場化價值的功能落地，避免偏離核心理念","提升使用者黏著與口碑案例"] }
+  ],
+  timeline:[
+    { year:"2023", title:"加入新創、接手 0→1", detail:"建立 PM 職能、導入 Jira、梳理流程" },
+    { year:"2024", title:"導入標準化、TPS 落地", detail:"小步試驗 + PDCA，提升可視化與同步性" },
+    { year:"2025", title:"擴編與制度化", detail:"3 PM + 1 助理，形成教練式培育" }
+  ]
+};
 
-  <!-- Loader：抓 timeline.json 然後渲染 -->
-  <script type="text/babel">
-    async function loadItems(){
-      try{
-        const res = await fetch("./timeline.json", { cache: "no-store" });
-        if(!res.ok) throw new Error("HTTP "+res.status);
-        return await res.json();
-      }catch(e){
-        console.warn("讀取 timeline.json 失敗，改用空資料或 window.CAREER_EVENTS。", e);
-        return window.CAREER_EVENTS || [];
-      }
+// Helpers
+const $ = (sel)=>document.querySelector(sel);
+const $$ = (sel)=>document.querySelectorAll(sel);
+function el(tag,cls,html){ const n=document.createElement(tag); if(cls) n.className=cls; if(html!=null) n.innerHTML=html; return n; }
+
+function renderProfile(){ $("#nameTitle").textContent = `${DATA.profile.name}｜${DATA.profile.title}`; $("#emailLink").textContent = DATA.profile.email; $("#emailLink").href = `mailto:${DATA.profile.email}`; }
+
+function renderCurrent(){
+  const h = $("#currentHeader");
+  h.innerHTML = `<div><strong>${DATA.current.title}</strong> ・ ${DATA.current.company} <span class="small muted">(${DATA.current.period})</span></div>
+                 <div class="small muted" style="margin-top:6px">${DATA.current.summary}</div>`;
+  const scopeList = $("#scopeList"); scopeList.innerHTML="";
+  DATA.current.scopes.forEach(s=> scopeList.appendChild(el("li","",s)));
+  const respList = $("#respList"); respList.innerHTML="";
+  DATA.current.responsibilities.forEach(s=> respList.appendChild(el("li","",s)));
+  const toolTags = $("#toolTags"); toolTags.innerHTML="";
+  DATA.current.tools.forEach(t=> toolTags.appendChild(el("span","pill",t)));
+  const valueList = $("#valueList"); valueList.innerHTML="";
+  DATA.current.valueProps.forEach(v=> valueList.appendChild(el("li","",v)));
+}
+
+function renderSkillMatrix(){
+  const wrap = $("#skillMatrix"); wrap.innerHTML="";
+  DATA.skillMatrix.forEach(g=>{
+    const card = el("div","ach");
+    card.innerHTML = `<div class="small muted">${g.cat}</div>`;
+    const row = el("div","row");
+    g.items.forEach(it=> row.appendChild(el("span","pill",it)));
+    card.appendChild(row);
+    wrap.appendChild(card);
+  });
+}
+
+function setActive(tab){
+  $$(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===tab));
+  ["current","skills","achievements","timeline"].forEach(id=>{
+    const p = document.getElementById("panel-"+id);
+    p.classList.toggle("hidden", id!==tab);
+  });
+  document.getElementById("panel-"+tab).scrollIntoView({behavior:"smooth", block:"start"});
+}
+$$(".tab").forEach(t=> t.addEventListener("click", ()=> setActive(t.dataset.tab)));
+$$(".entry").forEach(c=> c.addEventListener("click", ()=> setActive(c.dataset.target)));
+
+let roleFilter=null, skillFilter=null, q="";
+function renderPills(){
+  const roleWrap = $("#rolePills"); roleWrap.innerHTML="";
+  DATA.roles.forEach(r=>{
+    const b = el("span","pill",r.name);
+    if(roleFilter===r.id){ b.style.background="#111827"; b.style.color="#fff"; }
+    b.onclick=()=>{ roleFilter = (roleFilter===r.id? null : r.id); renderAchievements(); renderCharts(); };
+    roleWrap.appendChild(b);
+  });
+  const skillWrap = $("#skillPills"); skillWrap.innerHTML="";
+  DATA.skills.forEach(s=>{
+    const b = el("span","pill",s.name);
+    if(skillFilter===s.id){ b.style.background="#111827"; b.style.color="#fff"; }
+    b.onclick=()=>{ skillFilter = (skillFilter===s.id? null : s.id); renderAchievements(); renderCharts(); };
+    skillWrap.appendChild(b);
+  });
+}
+function filteredAchievements(){
+  return DATA.achievements.filter(a=>{
+    const rOk = roleFilter ? a.roles.includes(roleFilter) : true;
+    const sOk = skillFilter ? a.skills.includes(skillFilter) : true;
+    const text = (a.title+" "+a.bullets.join(" ")).toLowerCase();
+    const qOk = q ? text.includes(q.toLowerCase()) : true;
+    return rOk && sOk && qOk;
+  });
+}
+function renderAchievements(){
+  const box = $("#achList"); box.innerHTML="";
+  const data = filteredAchievements();
+  $("#achEmpty").style.display = data.length? "none":"block";
+  data.forEach(a=>{
+    const card = el("div","ach");
+    const head = el("div","row"); head.style.justifyContent="space-between";
+    const left = el("div","");
+    left.innerHTML = `<h4>${a.title}</h4><div class="small muted">${a.period}</div>`;
+    const chips = el("div","chips");
+    a.roles.forEach(rid=>{ const sp=el("span","pill",DATA.roles.find(r=>r.id===rid)?.name||rid); sp.onclick=()=>{roleFilter=rid; renderPills(); renderAchievements(); renderCharts();}; chips.appendChild(sp); });
+    a.skills.forEach(sid=>{ const sp=el("span","pill",DATA.skills.find(s=>s.id===sid)?.name||sid); sp.onclick=()=>{skillFilter=sid; renderPills(); renderAchievements(); renderCharts();}; chips.appendChild(sp); });
+    head.appendChild(left); head.appendChild(chips);
+    const ul = el("ul","list");
+    a.bullets.forEach(t=> ul.appendChild(el("li","",t)));
+    card.appendChild(head); card.appendChild(ul);
+    box.appendChild(card);
+  });
+}
+function computeSkillStats(list){
+  const map={}; list.forEach(a=>a.skills.forEach(s=>map[s]=(map[s]||0)+1));
+  return DATA.skills.map(s=>({id:s.id,name:s.name,count:map[s.id]||0})).filter(d=>d.count>0);
+}
+function computeRoleStats(list){
+  const map={}; list.forEach(a=>a.roles.forEach(r=>map[r]=(map[r]||0)+1));
+  const arr = DATA.roles.map(r=>({id:r.id,name:r.name,value:map[r.id]||0})).filter(d=>d.value>0);
+  const total = arr.reduce((s,d)=>s+d.value,0)||1;
+  return arr.map(d=>({...d,pct:Math.round(d.value/total*100)}));
+}
+function renderBarChart(){
+  const list = filteredAchievements();
+  const data = computeSkillStats(list);
+  const svg = document.getElementById("barChart"); svg.innerHTML="";
+  const w=640, h=260, m={l:40,r:10,t:20,b:60};
+  const innerW = w-m.l-m.r, innerH = h-m.t-m.b;
+  const axis = document.createElementNS("http://www.w3.org/2000/svg","g"); axis.setAttribute("class","axis");
+  const xCount = data.length||1;
+  const maxV = Math.max(1, ...data.map(d=>d.count));
+  const barW = innerW / xCount * 0.7;
+  data.forEach((d,i)=>{
+    const x = m.l + (i+0.5)*(innerW/xCount) - barW/2;
+    const hVal = d.count/maxV * (innerH-10);
+    const y = m.t + innerH - hVal;
+    const rect = document.createElementNS("http://www.w3.org/2000/svg","rect");
+    rect.setAttribute("x", x); rect.setAttribute("y", y); rect.setAttribute("width", barW); rect.setAttribute("height", hVal);
+    rect.setAttribute("class","bar");
+    svg.appendChild(rect);
+    const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+    tx.setAttribute("x", m.l + (i+0.5)*(innerW/xCount)); tx.setAttribute("y", h-20); tx.setAttribute("text-anchor","middle"); tx.textContent = d.name; axis.appendChild(tx);
+    const tv = document.createElementNS("http://www.w3.org/2000/svg","text");
+    tv.setAttribute("x", m.l + (i+0.5)*(innerW/xCount)); tv.setAttribute("y", y-6); tv.setAttribute("text-anchor","middle"); tv.textContent = d.count; axis.appendChild(tv);
+  });
+  svg.appendChild(axis);
+}
+function polarToCartesian(cx, cy, r, angleDeg){
+  const rad = (angleDeg-90)*Math.PI/180;
+  return { x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad) };
+}
+function arcPath(cx, cy, r, start, end){
+  const s = polarToCartesian(cx,cy,r,end);
+  const e = polarToCartesian(cx,cy,r,start);
+  const large = end-start <= 180 ? 0 : 1;
+  return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 0 ${e.x} ${e.y} L ${cx} ${cy} Z`;
+}
+function renderPieChart(){
+  const list = filteredAchievements();
+  const data = computeRoleStats(list);
+  const svg = document.getElementById("pieChart"); svg.innerHTML="";
+  const cx=160, cy=130, r=90;
+  let angle = 0;
+  const palette = ["#93c5fd","#86efac","#fda4af","#fcd34d","#c4b5fd","#a5f3fc"];
+  data.forEach((d,i)=>{
+    const a = d.pct/100*360;
+    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d", arcPath(cx,cy,r, angle, angle+a));
+    path.setAttribute("fill", palette[i%palette.length]);
+    path.setAttribute("class","pie-slice");
+    svg.appendChild(path);
+    const mid = angle + a/2;
+    const p = polarToCartesian(cx,cy,r*0.65,mid);
+    const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+    tx.setAttribute("x", p.x); tx.setAttribute("y", p.y); tx.setAttribute("text-anchor","middle"); tx.setAttribute("class","legend");
+    tx.textContent = `${d.name} ${d.pct}%`;
+    svg.appendChild(tx);
+    angle += a;
+  });
+  if(data.length===0){
+    const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+    tx.setAttribute("x", cx); tx.setAttribute("y", cy); tx.setAttribute("text-anchor","middle"); tx.setAttribute("class","legend");
+    tx.textContent = "無資料";
+    svg.appendChild(tx);
+  }
+}
+function renderCharts(){ renderBarChart(); renderPieChart(); }
+
+document.getElementById("q")?.addEventListener("input", (e)=>{ q=e.target.value; renderAchievements(); renderCharts(); });
+document.getElementById("resetBtn")?.addEventListener("click", ()=>{ roleFilter=null; skillFilter=null; q=""; document.getElementById("q").value=""; renderPills(); renderAchievements(); renderCharts(); });
+
+function renderTimeline(){}
+function updateTabCounts(){
+  document.getElementById("count-current").textContent = `(${DATA.current.responsibilities.length})`;
+  const skillCount = DATA.skillMatrix.reduce((s,g)=> s + g.items.length, 0);
+  document.getElementById("count-skills").textContent = `(${skillCount})`;
+  document.getElementById("count-achv").textContent = `(${DATA.achievements.length})`;
+  document.getElementById("count-time").textContent = `(${DATA.timeline.length})`;
+}
+
+function init(){
+  renderProfile();
+  renderCurrent();
+  renderSkillMatrix();
+  renderPills();
+  renderAchievements();
+  renderCharts();
+  renderTimeline();
+  updateTabCounts();
+}
+init();
+</script>
+
+
+<script>
+  window.CAREER_EVENTS = [{"id": "1", "date": "2014-01-01", "title": "資訊專員", "org": "中良工業股份有限公司", "location": "", "type": "job", "description": "Agentflow、Moodle教學平台架設與維護", "tags": [], "highlights": ["獨立開發: 入職後約3個月可獨立開發完整BPM專案流程至產出", "跨領域開發:結合開發BPM專案，可自APP紀錄資料自動傳送至BPM簽核。"], "linkUrl": ""}, {"id": "2", "date": "2016-01-01", "title": "SAP工程師", "org": "中良工業股份有限公司", "location": "", "type": "job", "description": "負責台灣廠區SAP-FI財務模組導入及維運", "tags": [], "highlights": ["大量開發FI相關報表包含應收AR、應付AP、固定資產FA、總帳GL及月結、年結所需相關報表。", "跨模組開發-MM採購與庫存模組: 優化採購與庫存流程，有效節省採購/倉會人員用於查詢報表的時間避免錯誤資料。", "跨模組開發-PP生產模組&MM採購與庫存模組: 生產線上流程優化-工單自動發料", "財務分析表-依據公開資訊觀測站/採IFRSs後，提供一份與上市櫃公司等同之財務分析。"], "linkUrl": ""}, {"id": "3", "date": "2019-01-01", "title": "SAP工程師", "org": "中良工業股份有限公司", "location": "", "type": "job", "description": "1.負責台灣廠區SAP-FI財務模組及CO成本模組導入及維運\n2.負責越南廠區SAP-FI財務模組及CO成本模組導入及維運", "tags": [], "highlights": ["獨立開發越南區SAP導入-FI模組發票系統GUI-VAT，產出相關表單、發票等皆符合當地稅法規定，依台灣導入經驗開發此系統約節省成本約150-200萬效益", "越南區SAP導入-三角貿易流程梳理負責人: 整合SD銷售模組/MM採購與庫存模組/FI財務模組 三大模組，提供三角貿易與境外公司之公司間交易Solution的系統建議。", "跨模組-SD銷售模組: 負責信用額度功能上線，以顧問角色執行此專案，包含後台IMG設定、系統教育訓練、劇本測試等。"], "linkUrl": ""}, {"id": "4", "date": "2022-01-01", "title": "課長", "org": "中良工業股份有限公司", "location": "", "type": "job", "description": "1.負責台灣廠區SAP-FI財務模組及CO成本模組導入及維運\n2.負責越南廠區SAP-FI財務模組及CO成本模組導入及維運", "tags": [], "highlights": ["第三次SAP導入(越南新廠)-雙模組職責: 負責FI財務+CO成本模組導入。", "BI領域開發: 跨鼎新、文中、SAP系統整合各財務系統，做資料分析及擷取整合，開發產出集團內所有子公司整合之財報(損益表)。", "晉升課長，管理SAP Team"], "linkUrl": ""}, {"id": "5", "date": "2022-01-01", "title": "經理", "org": "以恩資訊股份有限公司", "location": "", "type": "job", "description": "Saas模式排程軟體導入專案經理", "tags": [], "highlights": ["新創企業開創期的成功案例: 在資源、知識背景皆尚未穩定時，完成第一個成功導入案例，於3個月內完成資料介接並導入系統，再3個月內完成有效企業營運改善，提升庫存周轉率5%、生產Lead Time下降25%(38天下降至10天)、換模時間下降15%(180分鐘下降至153分鐘)。"], "linkUrl": ""}, {"id": "6", "date": "2024-01-01", "title": "經理", "org": "以恩資訊股份有限公司", "location": "", "type": "job", "description": "1.Saas模式排程軟體導入專案經理\n2.擴張產品服務處團隊及人才培育\n3.建立可複製導入SOP，檢核團隊結案績效成效", "tags": [], "highlights": ["從零打造PM團隊: 目前PM團隊擴增人數約4位PM+1位專案助理，人才流失率低。", "建立可複製導入SOP，並與外部TPS顧問合作共同實施專案計畫，大幅降低PM訓練期。"], "linkUrl": ""}];
+</script>
+
+<script type="text/babel">
+const { useMemo, useRef, useEffect, useState } = React;
+const FM = window.framerMotion || window.FramerMotion || window['framer-motion'] || {};
+const { motion, useScroll, useSpring, useTransform, useReducedMotion } = FM;
+
+// ---- Minimal UI primitives ----
+function Card({ children, className="" }) { return <div className={`rounded-2xl border border-slate-200/80 bg-white/90 shadow-lg backdrop-blur ${className}`}>{children}</div>; }
+function CardHeader({ children, className="" }) { return <div className={`p-4 border-b border-slate-200/70 ${className}`}>{children}</div>; }
+function CardTitle({ children, className="" }) { return <div className={`flex items-center justify-between ${className}`}>{children}</div>; }
+function CardContent({ children, className="" }) { return <div className={`p-4 ${className}`}>{children}</div>; }
+function Badge({ children, className="" }) { return <span className={`inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs ${className}`}>{children}</span>; }
+function Switch({ checked, onChange }) {
+  return (<label className="inline-flex cursor-pointer items-center gap-2">
+    <span className="text-sm text-slate-500">精簡模式</span>
+    <input type="checkbox" className="peer sr-only" checked={checked} onChange={(e)=>onChange?.(e.target.checked)} />
+    <span className="h-6 w-11 rounded-full bg-slate-300 transition peer-checked:bg-indigo-500 relative">
+      <span className="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-5" />
+    </span>
+  </label>);
+}
+
+// ---- Icons ----
+const IconMap = {
+  job: (p)=> (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M3 7h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>),
+  project: (p)=> (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>),
+  education: (p)=> (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M22 12L12 7 2 12l10 5 10-5z"/><path d="M6 15v3l6 3 6-3v-3"/></svg>),
+  award: (p)=> (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="8" r="5"/><path d="M8 14l-2 7 6-3 6 3-2-7"/></svg>),
+  default: (p)=> (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="12" r="9"/></svg>),
+};
+const TypeIcon = (type)=> (IconMap[type] || IconMap.default);
+
+// ---- Utils ----
+function formatDate(d){ const date = new Date(d); return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
+function cx(...xs){ return xs.filter(Boolean).join(" "); }
+
+function Timeline({ events, compact=false, alternate=true, groupedByYear=true, animate=true }){
+  const containerRef = useRef(null);
+  const railRef = useRef(null);
+  const prefersReduced = useReducedMotion ? useReducedMotion() : false;
+
+  const { scrollYProgress } = (useScroll ? useScroll({ target: containerRef, offset: ["start 0.85","end 0.15"] }) : { scrollYProgress: { get: ()=>0 } });
+  const progressY = (useSpring ? useSpring(scrollYProgress, { stiffness: 90, damping: 20, mass: 0.2 }) : { get: ()=>0 });
+  const scaleY = (useTransform ? useTransform(progressY, [0,1], [0.05,1]) : 1);
+  const markerY = (useSpring ? useSpring(0, { stiffness: 160, damping: 20, mass: .25 }) : { set: ()=>{} });
+
+  const updateMarkerOnScroll = React.useCallback(()=>{
+    if(!containerRef.current) return;
+    const items = Array.from(containerRef.current.querySelectorAll('[data-timeline-item="1"]'));
+    if(!items.length) return;
+    const mid = window.innerHeight * 0.5;
+    let best=null, bestDist=Infinity;
+    for(const el of items){
+      const r = el.getBoundingClientRect();
+      const cy = r.top + r.height/2;
+      const d = Math.abs(cy - mid);
+      if(d < bestDist){ bestDist=d; best=r; }
     }
-    async function mountTimeline(){
-      const items = await loadItems();
-      const root = ReactDOM.createRoot(document.getElementById("timeline"));
-      const Comp = window.AnimatedCareerTimeline;
-      if(!Comp){
-        root.render(React.createElement("div", {className:"muted"}, "AnimatedCareerTimeline 尚未載入。"));
-        return;
-      }
-      root.render(React.createElement(Comp, { items }));
+    if(best && railRef.current && markerY.set){
+      const railRect = railRef.current.getBoundingClientRect();
+      markerY.set(best.top - railRect.top + best.height/2);
     }
-    mountTimeline();
-  </script>
+  }, [markerY]);
+
+  useEffect(()=>{
+    const onScroll = ()=> requestAnimationFrame(updateMarkerOnScroll);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive:true });
+    window.addEventListener("resize", onScroll);
+    return ()=>{
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [updateMarkerOnScroll]);
+
+  const sorted = useMemo(()=> [...events].sort((a,b)=> new Date(a.date) - new Date(b.date)), [events]);
+  const groups = useMemo(()=>{
+    if(!groupedByYear) return { all: sorted };
+    const m = new Map();
+    for(const ev of sorted){
+      const y = new Date(ev.date).getFullYear().toString();
+      if(!m.has(y)) m.set(y, []);
+      m.get(y).push(ev);
+    }
+    return Object.fromEntries(m);
+  }, [sorted, groupedByYear]);
+  const years = Object.keys(groups).sort((a,b)=> Number(a)-Number(b));
+
+  return (
+    <div ref={containerRef} className="relative">
+      <motion.div className="sticky top-0 z-50 h-1 w-full bg-gradient-to-r from-indigo-500 via-fuchsia-400 to-emerald-400 origin-left" style={{ scaleX: progressY, transformOrigin:"left" }} />
+      <div className="relative grid grid-cols-[1.5rem_1fr] gap-4">
+        <div className="relative">
+          <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-slate-200" />
+          <motion.div ref={railRef} className="absolute left-3 top-0 w-0.5" style={{ scaleY, transformOrigin:"top", background:"linear-gradient(#6366f1,#22c55e)", filter:"drop-shadow(0 0 10px rgba(56,189,248,.45))" }} />
+          <motion.div className="absolute left-3" style={{ y: markerY, translateX:"-50%", pointerEvents:"none" }}>
+            <div className="relative h-10 w-10">
+              <div className="absolute -inset-7 rounded-full bg-cyan-400/25 blur-2xl" />
+              <div className="absolute -inset-5 rounded-full bg-fuchsia-400/25 blur-xl" />
+              <div className="absolute -inset-3 rounded-full bg-violet-500/30 blur-lg" />
+              <div className="absolute inset-0 rounded-full bg-white shadow ring-1 ring-black/10" />
+              <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600" />
+            </div>
+          </motion.div>
+        </div>
+        <div className="space-y-10">
+          <div className="mb-4 flex items-center justify-end gap-4">
+            <Switch checked={compact} onChange={()=>{}} />
+          </div>
+          {years.map((y)=> (<YearGroup key={y} year={y} events={groups[y]} compact={compact} alternate animate={!prefersReduced && true} />))}
+        </div>
+      </div>
+    </div>
+  );
+}
+function YearGroup({ year, events, compact, alternate, animate }){
+  return (
+    <section aria-labelledby={`year-${year}`} className="scroll-mt-20">
+      <div className="mb-6 grid grid-cols-[1.5rem_1fr] items-center gap-3">
+        <div className="col-start-1 flex justify-center"><div className="rounded-full bg-indigo-100 px-4 py-1 text-sm font-semibold text-indigo-600">{year}</div></div>
+        <div className="col-start-2 h-px bg-slate-200" />
+      </div>
+      <motion.ul role="list" className="space-y-10" initial="hidden" whileInView="show" viewport={{ once:true, amount:0.2 }}>
+        {events.map((ev, idx)=> (<TimelineItem key={ev.id} ev={ev} side={alternate ? (idx % 2 === 0 ? "left" : "right") : "right"} compact={compact} animate={animate} />))}
+      </motion.ul>
+    </section>
+  );
+}
+const itemVariants = { hidden:{ opacity:0, y:24, scale:0.98, filter:"blur(6px)" }, show:{ opacity:1, y:0, scale:1, filter:"blur(0px)", transition:{ type:"spring", stiffness:120, damping:16 } } };
+function TimelineItem({ ev, side="right", compact=false, animate=true }){
+  const Icon = TypeIcon(ev.type);
+  return (
+    <motion.li data-timeline-item="1" variants={animate ? itemVariants : undefined}>
+      <div className="grid grid-cols-[1.5rem_1fr] items-start gap-3">
+        <div className="col-start-1 flex justify-center"><div className="grid h-9 w-9 place-items-center rounded-full border border-indigo-200 bg-indigo-50 text-indigo-600 shadow"><Icon /></div></div>
+        <div className="col-start-2">
+          <Card className={cx(compact ? "" : "", side === "left" ? "origin-left" : "origin-right")}>
+            {ev.date && (<CardHeader className="pb-3"><CardTitle><span className="flex items-center gap-2 text-sm text-slate-500"><span className="inline-block h-2 w-2 rounded-full bg-indigo-400"></span><span className="font-medium tracking-tight">{formatDate(ev.date)}</span></span></CardTitle></CardHeader>)}
+            <CardContent className={cx(compact ? "p-0" : "pt-0")}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className={cx("leading-tight font-semibold", compact ? "text-base" : "text-xl")}>{ev.title}</h3>
+                  {(ev.org || ev.location) && (<p className="mt-1 text-sm text-slate-500">{ev.org}{ev.org && ev.location ? " · " : ""}{ev.location}</p>)}
+                </div>
+                {Array.isArray(ev.tags) && ev.tags.length ? (<div className="flex shrink-0 flex-wrap gap-1">{ev.tags.slice(0,3).map((t)=>(<Badge key={t}>{t}</Badge>))}</div>) : null}
+              </div>
+              {ev.description && <p className="mt-3 text-sm leading-relaxed text-slate-600">{ev.description}</p>}
+              {Array.isArray(ev.highlights) && ev.highlights.length ? (<ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-700">{ev.highlights.map((h,i)=>(<li key={i}>{h}</li>))}</ul>) : null}
+              {ev.linkUrl && (<div className="mt-3"><a href={ev.linkUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-indigo-600 hover:underline">查看更多</a></div>)}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </motion.li>
+  );
+}
+
+// ---- Bridge DATA.timeline -> events ----
+function mapDataToEvents(){
+  if (Array.isArray(window.CAREER_EVENTS) && window.CAREER_EVENTS.length) { return window.CAREER_EVENTS; }
+  const base = (window.DATA && Array.isArray(window.DATA.timeline)) ? window.DATA.timeline : [];
+  if(base.length === 0){
+    return [
+      { id:"1", date:"2019-07-15", title:"實習生", type:"education", org:"某公司", description:"初入軟體業" },
+      { id:"2", date:"2021-01-10", title:"前端工程師", type:"job", org:"公司A", tags:["React"], description:"負責資訊平台" },
+      { id:"3", date:"2023-03-01", title:"PM 主管 / 資料分析", type:"job", org:"LeanPlay", tags:["PM","TPS"], description:"建立 PM 組織與制度" },
+    ];
+  }
+  return base.map((t,i)=>{
+     const y = Number(String(t.year).slice(0,4)) || new Date().getFullYear();
+     const d = `${y}-12-31`;
+     return { id:String(i+1), date:d, title:t.title||`${y}`, description:t.detail||"", type:"job", org:t.org||"", location:t.location||"", tags:Array.isArray(t.tags)?t.tags:[] };
+  });
+}
+
+// ---- Mount into #timeline ----
+function mountTimeline(){
+  const container = document.getElementById("timeline");
+  if(!container) return;
+  const root = ReactDOM.createRoot(container);
+  const events = mapDataToEvents();
+  root.render(<Timeline events={events} />);
+}
+window.renderTimeline = mountTimeline;
+document.addEventListener("DOMContentLoaded", ()=>{ try { mountTimeline(); } catch (e) { console.error(e); } });
+</script>
+
 </body>
 </html>
