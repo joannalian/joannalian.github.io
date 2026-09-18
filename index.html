@@ -1,129 +1,327 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="可離線使用、支援 Excel 群組匯入與拆分的婚宴排桌工具">
-  <title>好日子排桌</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    .panel-heading-simple{display:block}
-    .guest-tools{background:#f8f2ec;border:1px solid #eaded4;border-radius:12px;padding:13px;margin:16px 0}
-    .guest-tools-title{font-size:12px;font-weight:800;color:#786a67;margin-bottom:9px}
-    .guest-tool-actions,.import-file-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .guest-tool-actions .button,.import-file-actions .button{text-align:center;text-decoration:none;padding:9px 8px}
-    .table-tools .table-settings-button{border:1px solid #dfd2c8;background:#fff;color:#6f5f5b;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:800}
-    .table-tools .table-settings-button:hover{border-color:#a94f58;color:#873943;background:#fff7f5}
-    .eyebrow,.pill,.group-meta,.group-badges,.badge,.person .flags{font-size:12px}
-    .brand p,.board-heading p,.hint,.stats span,.text-button,.capacity,.group-head,.person,.drop-hint,.dialog-card label,.dropzone p,.preview-table{font-size:12px}
-    .import-file-actions{display:block}
-    .import-file-actions .button{display:block;width:100%;font-size:14px;font-weight:800;padding:11px 16px}
-    .compact-table{min-height:0}
-    .compact-header{padding:11px 13px;display:grid;grid-template-columns:minmax(110px,1fr) auto auto;gap:14px}
-    .table-identity{min-width:0}.capacity-note{font-size:12px;color:#786a67;margin-top:2px}.capacity-note.extra{color:#c47b24}.capacity-note.full{color:#a63f3f}
-    .seat-count{display:flex;align-items:baseline;gap:3px;min-width:62px;color:#668575}.seat-count strong{font-family:serif;font-size:28px;line-height:1}.seat-count span{font-size:12px;font-weight:800}.seat-count em{font-size:12px;color:#c47b24;font-style:normal;margin-left:4px}.seat-count.extra{color:#c47b24}.seat-count.full{color:#a63f3f}
-    .compact-body{padding:7px 10px 10px;display:grid;gap:5px}.compact-group{display:grid;grid-template-columns:minmax(105px,145px) 1fr;gap:8px;align-items:center;border-bottom:1px solid #eee5dd;padding:5px 2px}.compact-group:last-child{border-bottom:0}.compact-group-head{display:flex;align-items:center;gap:6px;cursor:grab;min-width:0}.compact-group-head strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.compact-group-head>span:last-child{color:#786a67;margin-left:auto;white-space:nowrap;font-size:12px}.group-color-dot{width:10px;height:10px;border-radius:50%;background:var(--group-color);flex:0 0 auto}.compact-people{display:flex;gap:5px;flex-wrap:wrap}.compact-people .person{padding:5px 7px;border-left:4px solid var(--group-color)}.child-seat-badge{background:#fff0dc;color:#a65a00;border:1px solid #efbd75;border-radius:5px;padding:2px 5px;font-size:12px}.veg-badge{background:#e8f3eb;color:#47715b;border-radius:5px;padding:2px 5px;font-size:12px}.compact-drop{min-height:62px}
-    .table-board.map-view{grid-template-columns:repeat(auto-fit,minmax(440px,1fr));gap:24px;padding:4px}.map-view .seating-map-card{border-radius:18px;aspect-ratio:auto;display:block;min-height:520px;padding:26px;background:#f9f4ee;overflow:visible}.round-layout{position:relative;width:min(430px,88vw);height:min(430px,88vw);margin:20px auto}.round-table{position:absolute;inset:20%;border-radius:50%;background:#fffdfa;border:8px solid #eaded4;box-shadow:0 12px 32px rgba(79,53,44,.13);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:42px 28px 28px;text-align:center}.map-settings{position:absolute;top:17px;right:50%;transform:translateX(50%);border:1px solid #dfd2c8;background:#fff;border-radius:8px;padding:6px 9px;color:#6f5f5b;font-weight:800;font-size:12px}.map-table-name{font-family:serif;font-size:20px;font-weight:800}.map-count{display:flex;align-items:baseline;gap:3px;margin-top:5px;color:#668575}.map-count strong{font-family:serif;font-size:38px;line-height:1}.map-count span{font-size:14px;font-weight:800}.map-count.extra{color:#c47b24}.map-count.full{color:#a63f3f}.map-limit{font-size:12px;color:#786a67;margin-top:3px}.map-legends{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:10px;max-height:86px;overflow:auto}.map-legend{display:flex;align-items:center;gap:4px;border:1px solid #e5dbd2;background:#fff;border-radius:6px;padding:3px 5px;cursor:grab}.map-legend>span{width:9px;height:9px;border-radius:50%}.map-legend b,.map-legend small{font-size:12px}.map-legend small{color:#786a67}.chair-wrap{position:absolute;left:50%;top:50%;width:86px;height:64px;margin-left:-43px;margin-top:-32px;transform:rotate(var(--angle)) translateY(-190px) rotate(calc(-1 * var(--angle)));display:grid;place-items:center}.map-chair{width:82px;min-height:55px;border-radius:12px;border:2px solid var(--seat-color);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;box-shadow:0 4px 10px rgba(79,53,44,.08)}button.map-chair{cursor:grab}.map-chair.occupied{background:color-mix(in srgb,var(--seat-color) 20%,white);border-color:var(--seat-color)}.map-chair.baby-chair{border:3px solid #d98218;background:#fff0dc}.chair-icon{font-size:16px;line-height:1}.chair-name{font-size:12px;max-width:74px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}.map-chair.empty{color:#aa9d95;background:#f6f1ec;border-style:dashed}
-    .adult-chair-icon,.empty-chair-icon{position:relative;width:24px;height:18px;display:block}.adult-chair-icon::before,.empty-chair-icon::before{content:"";position:absolute;left:4px;top:0;width:16px;height:9px;border-radius:5px 5px 3px 3px;background:var(--seat-color)}.adult-chair-icon::after,.empty-chair-icon::after{content:"";position:absolute;left:2px;bottom:0;width:20px;height:8px;border:2px solid var(--seat-color);border-top-width:3px;border-radius:3px 3px 6px 6px;background:#fff}.empty-chair-icon::before{background:transparent;border:2px dashed var(--seat-color)}.empty-chair-icon::after{background:transparent;border-style:dashed}.baby-chair-icon{font-size:18px}.map-chair.baby-chair .chair-name{font-weight:800;color:#9b5200}
-    .category-summary{cursor:default}.category-summary>.category-dots{width:auto;height:auto;display:flex;gap:2px}.category-dots i{display:block;width:8px;height:8px;border-radius:50%}
-    .map-chair.baby-chair{border:2px solid var(--seat-color);background:color-mix(in srgb,var(--seat-color) 20%,white)}
-    .map-chair.baby-chair .chair-icon{width:25px;height:25px;border:2px solid var(--seat-color);border-radius:50%;background:#fff;display:grid;place-items:center;font-size:17px;line-height:1;outline:2px dotted var(--seat-color);outline-offset:2px;margin:3px 0 2px}
-    .map-chair.baby-chair .chair-name{font-weight:800;color:inherit}
-    .group-card-actions,.compact-group-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}.compact-group-actions{margin-left:auto}.delete-group-button{border:1px solid #e6caca;background:#fff;color:#a63f3f;border-radius:7px;padding:3px 7px;font-size:12px;font-weight:800}.delete-group-button:hover{background:#fff0f0;border-color:#c97979}.compact-delete-group{padding:2px 6px}.chair-flags{display:flex;align-items:center;justify-content:center;gap:5px;min-height:25px}.veg-chair-icon{width:25px;height:25px;border:2px solid var(--seat-color);border-radius:50%;background:#fff;display:grid;place-items:center;font-size:16px;line-height:1;outline:2px dotted var(--seat-color);outline-offset:2px;margin:3px 0 2px}.map-chair.veg-chair .chair-name{font-weight:800}.map-chair.baby-chair .chair-flags .chair-icon{margin:3px 0 2px}.map-chair.baby-chair.veg-chair .chair-flags{gap:8px}.round-table .map-legends{max-height:none;overflow:visible;display:grid;grid-template-columns:repeat(2,max-content);justify-content:center;gap:4px}.round-table .map-legends.many-categories{gap:2px 3px}.round-table .map-legends.many-categories .map-legend{padding:2px 4px}.round-table .map-legends.many-categories .map-legend b,.round-table .map-legends.many-categories .map-legend small{font-size:12px}
-    .map-tools{margin:-5px 0 16px;background:#fffdfa;border:1px solid #e7ddd4;border-radius:13px;padding:11px 13px}.map-tool-actions{display:flex;gap:8px;flex-wrap:wrap}.unplaced-panel{display:flex;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid #eee5dd}.unplaced-panel>strong{white-space:nowrap}.unplaced-panel>span{font-size:12px;color:#786a67}.unplaced-list{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}.unplaced-table{border:1px solid #d9cbc0;background:#fff;border-radius:8px;padding:6px 9px;font-weight:800;color:#6f5f5b}.unplaced-table:hover{border-color:#a94f58;color:#873943}.table-board.map-view.venue-mode{display:block;position:relative;min-height:760px;border:1px solid #d9cbc0;border-radius:16px;background-color:#eee7df;background-size:contain;background-position:center;background-repeat:no-repeat;overflow:hidden}.venue-mode .seating-map-card{position:absolute;width:470px;min-height:520px;margin:0;transform:translate(-50%,-50%) scale(.68);transform-origin:center;box-shadow:0 18px 45px rgba(65,43,35,.18)}.map-move-handle{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;border:1px solid #d9cbc0;background:#382d2b;color:#fff;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:800;cursor:move;white-space:nowrap}.venue-empty{position:absolute;inset:0;display:grid;place-items:center;color:#786a67;background:rgba(255,253,250,.5);text-align:center;padding:30px}
-    .venue-mode .venue-marker{position:absolute;width:170px;height:170px;min-height:0;margin:0;transform:translate(-50%,-50%);border-radius:50%;background:rgba(255,253,250,.94);border:4px solid #668575;box-shadow:0 8px 24px rgba(65,43,35,.22);overflow:visible;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:17px 9px 28px;backdrop-filter:blur(3px)}.venue-mode .venue-marker.extra{border-color:#c47b24}.venue-mode .venue-marker.full{border-color:#a63f3f}.venue-marker-settings{position:absolute;right:9px;top:9px;width:28px;height:28px;border-radius:50%;border:1px solid #dfd2c8;background:#fff;color:#6f5f5b;font-size:12px}.venue-marker-name{font-family:serif;font-size:16px;font-weight:800;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.venue-marker-count{display:flex;align-items:baseline;color:#668575}.venue-marker-count strong{font-family:serif;font-size:29px;line-height:1}.venue-marker-count span{font-size:13px;font-weight:800}.venue-marker.extra .venue-marker-count{color:#c47b24}.venue-marker.full .venue-marker-count{color:#a63f3f}.venue-marker-note{font-size:12px;color:#786a67}.venue-child{position:absolute;left:-8px;top:7px;background:#fff;border:2px dotted #c47b24;border-radius:99px;padding:3px 6px;font-size:12px;font-weight:800}.venue-category-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));justify-content:center;gap:2px 3px;width:150px;margin-top:3px}.venue-category-chip{display:flex;align-items:center;justify-content:center;gap:3px;min-width:0;border:1px solid #e2d7cf;background:#fff;border-radius:5px;padding:1px 3px;line-height:1.2}.venue-category-chip:only-child{grid-column:1/-1;justify-self:center;min-width:84px}.venue-category-chip b,.venue-category-chip small{font-size:12px}.venue-category-chip b{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.venue-category-chip small{color:#786a67;flex:0 0 auto}.venue-category-colors{display:flex;flex:0 0 auto}.venue-category-colors i{width:7px;height:7px;border-radius:50%;display:block;margin-left:-2px}.venue-category-colors i:first-child{margin-left:0}.venue-marker .map-move-handle{bottom:-13px;padding:5px 8px}.venue-mode .venue-empty{z-index:0}
-    .dialog-card.wide{max-height:calc(100vh - 28px);overflow:auto}.import-preview{max-height:min(55vh,520px)}.import-preview.import-error{color:#a63f3f;background:#fff0ef}.sync-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:#e7ddd4;border-bottom:1px solid #e7ddd4}.sync-summary div{background:#fffaf6;padding:9px 5px;text-align:center}.sync-summary strong{display:block;font-family:serif;font-size:22px;line-height:1.15}.sync-summary span{display:block;color:#786a67;font-size:12px;margin-top:2px}.sync-section{padding:11px 12px;border-bottom:1px solid #e7ddd4}.sync-section h3{display:flex;align-items:center;gap:7px;margin:0 0 7px;font-size:14px}.sync-section h3 span{min-width:22px;padding:2px 6px;border-radius:99px;background:#eee5dd;text-align:center;font-size:12px}.sync-items{display:grid;gap:5px}.sync-items p{display:flex;justify-content:space-between;gap:14px;margin:0;padding:7px 9px;border-radius:7px;background:#f8f4ef;font-size:12px;line-height:1.45}.sync-items p b{flex:0 0 auto}.sync-items p span{color:#786a67;text-align:right}.sync-add h3{color:#39704e}.sync-update h3{color:#98620f}.sync-remove h3,.sync-danger h3{color:#a63f3f}.sync-remove .sync-items p,.sync-danger .sync-items p{background:#fff0ef}.sync-zero-note,.sync-footnote{margin:0;padding:10px 12px;font-size:12px;line-height:1.55;color:#786a67}.sync-zero-note{background:#fff8e8;color:#7b5a1c;border-bottom:1px solid #e7ddd4}
-    @media(max-width:760px){.sync-summary{grid-template-columns:repeat(3,1fr)}.sync-items p{display:block}.sync-items p span{display:block;text-align:left;margin-top:2px}}
-    @media(max-width:420px){.guest-tool-actions,.import-file-actions{grid-template-columns:1fr}}
-    @media(max-width:700px){.compact-header{grid-template-columns:1fr auto}.compact-header .table-tools{grid-column:1/-1}.compact-group{grid-template-columns:1fr}.table-board.map-view{grid-template-columns:1fr}.map-view .seating-map-card{min-height:430px;padding:8px}.round-layout{transform:scale(.82);transform-origin:top center;margin-bottom:-70px}}
-  </style>
-  <style>
-    .venue-start{min-height:560px;display:grid!important;place-items:center;border:1px dashed #d9cbc0;border-radius:16px;background:#fffaf6}.venue-start-message{text-align:center;color:#786a67;line-height:1.7}.venue-start-message strong{display:block;font-family:serif;font-size:21px;color:#382d2b}.venue-mode.quick-place{cursor:crosshair;outline:3px solid rgba(169,79,88,.25)}.venue-mode.quick-place::after{content:"點一下底圖，依序放置未定位桌次";position:absolute;left:50%;top:14px;transform:translateX(-50%);background:#382d2b;color:#fff;border-radius:99px;padding:8px 14px;font-size:12px;font-weight:800;z-index:8}.venue-marker{cursor:pointer}.venue-marker::after{content:"雙擊查看座位";position:absolute;left:50%;top:100%;transform:translate(-50%,7px);background:#382d2b;color:#fff;border-radius:6px;padding:4px 7px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s}.venue-marker:hover::after{opacity:1}.seat-preview-shell{width:min(620px,calc(100vw - 24px));background:#f9f4ee;border-radius:20px;padding:14px;position:relative}.seat-preview-close{position:absolute;right:12px;top:10px;z-index:10}.seat-preview-tip{text-align:center;color:#786a67;font-size:12px;padding:3px 45px 8px}.seat-preview-shell .seating-map-card{box-shadow:none;border:0;background:transparent;min-height:520px}.seat-preview-shell .round-layout{margin:10px auto}
-  </style>
-  <style>.map-extra-seat{margin-top:6px;border:1px dashed #c47b24;background:#fff6e8;color:#a65a00;border-radius:99px;padding:3px 8px;font-size:12px;font-weight:800}.table-card.drop-extra .map-extra-seat,.table-card.drop-comfort .map-extra-seat{background:#c47b24;color:#fff;border-style:solid;box-shadow:0 0 0 4px rgba(196,123,36,.16)}</style>
-  <style>.category-first-body{gap:8px}.category-block{border:1px solid #e7ddd4;border-radius:10px;overflow:hidden;background:#fff}.category-block-header{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#eee6df;padding:7px 10px}.category-block-header strong{font-size:14px;color:#382d2b}.category-block-header span{font-size:12px;color:#786a67;font-weight:800}.category-group-list{padding:1px 7px}.category-group-list .compact-group:last-child{border-bottom:0}</style>
-  <style>
-    @media(min-width:761px){.guest-panel{position:sticky;top:78px;height:calc(100vh - 78px);align-self:start;display:flex;flex-direction:column;overflow:hidden;z-index:12}.guest-panel .waiting-list{flex:1;min-height:120px;max-height:none;overflow-y:auto;overscroll-behavior:contain;padding-right:6px}.guest-panel .add-manual{flex:0 0 auto}.waiting-list::-webkit-scrollbar{width:8px}.waiting-list::-webkit-scrollbar-track{background:#f4eee8;border-radius:99px}.waiting-list::-webkit-scrollbar-thumb{background:#cdbeb4;border-radius:99px}}
-  </style>
-  <style>
-    .venue-background-image{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:0;pointer-events:none}.venue-mode .venue-marker{z-index:2}
-    @media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.stats,.board-heading p,.board-heading .eyebrow,.map-tools,.map-move-handle,.venue-marker-settings,.map-settings,.seat-preview-tip{display:none!important}.board-heading{margin:0 0 8px}.board-heading h2{font-size:18px}.board-panel{padding:0!important}.table-board.venue-mode{width:100%!important;min-height:0!important;overflow:hidden!important;background:none!important}.venue-background-image{display:block!important;object-fit:contain!important}.venue-mode .venue-marker{transform:translate(-50%,-50%) scale(.58)!important;box-shadow:none!important}.venue-marker::after{display:none!important}@page{size:A4 landscape;margin:8mm}}
-  </style>
-  <style>
-    @media print{html,body{margin:0!important;padding:0!important;width:100%!important;height:auto!important}.workspace{display:block!important;min-height:0!important}.board-heading{display:none!important}.board-panel{width:100%!important;padding:0!important;margin:0!important}.table-board.venue-mode{display:block!important;height:170mm!important;width:min(100%,calc(170mm * var(--venue-aspect)))!important;margin:0 auto!important;min-height:0!important;break-inside:avoid-page!important;page-break-inside:avoid!important;page-break-before:avoid!important;page-break-after:avoid!important}.venue-background-image{object-fit:fill!important}.venue-mode .venue-marker{transform:translate(-50%,-50%) scale(.52)!important;transform-origin:center!important}@page{size:A4 landscape;margin:5mm}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>連怡蘭 (Joanna Lian)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8f6f2; 
+            --text-color: #3d3d3d; 
+            --primary-color: #003366; 
+            --accent-color: #007bff; 
+            --border-color: #e0e0e0;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            margin: 0; padding: 0; background-color: var(--bg-color);
+            color: var(--text-color); line-height: 1.7;
+        }
+
+        .container { display: flex; }
+
+        .sidebar {
+            width: 220px; background-color: #fff; border-right: 1px solid var(--border-color);
+            position: fixed; top:0; left:0; height: 100%; padding: 40px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 100;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .sidebar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .profile { text-align: center; padding: 0 20px; margin-bottom: 30px; }
+        .profile .profile-image {
+            width: 100px; height: 100px; border-radius: 50%;
+            border: 3px solid var(--accent-color);
+            background-image: url('profile.JPG'); 
+            background-size: cover;     
+            background-position: center;
+            margin: 0 auto;             
+            background-color: #ccc;
+        }
+        .profile h1 { font-size: 1.3rem; color: var(--primary-color); margin: 10px 0 5px 0; }
+        .profile p { font-size: 0.85rem; color: #777; margin: 0; }
+        .nav-menu { list-style: none; padding: 0; margin: 0; margin-top: 30px;}
+        .nav-menu li a { display: block; padding: 15px 30px; color: var(--text-color); text-decoration: none; font-size: 0.95rem; border-left: 4px solid transparent; transition: all 0.3s ease; }
+        .nav-menu li a:hover, .nav-menu li a.active { background-color: var(--bg-color); color: var(--primary-color); border-left-color: var(--accent-color); font-weight: 600; }
+        .sidebar-footer { margin-top: auto; text-align: center; font-size: 0.8rem; padding: 20px; }
+        .sidebar-footer a { color: var(--accent-color); text-decoration: none; }
+        
+        .main-content { margin-left: 220px; width: calc(100% - 220px); padding: 40px 60px; box-sizing: border-box; }
+        .content-section { margin-bottom: 60px; }
+        .section-header h2 { font-size: 2rem; color: var(--primary-color); border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 35px; }
+        
+        .summary-content-wrapper { padding: 10px 0; } .summary-module { margin-bottom: 30px; } .summary-intro-text { list-style: none; padding-left: 0; margin: 30px 0;} .summary-intro-text li { position: relative; padding-left: 25px; margin-bottom: 10px; } .summary-intro-text li::before { content: '✔'; color: var(--accent-color); position: absolute; left: 0; font-weight: bold; } .evolution-path { display: flex; align-items: center; font-size: 1rem; font-weight: 500; color: #555; flex-wrap: wrap;} .evolution-path .step { padding: 8px 15px; border-radius: 20px; background-color: #e2e3e5; color: #383d41; margin-bottom: 5px;} .evolution-path .arrow { font-size: 1.5rem; color: var(--accent-color); margin: 0 15px; } .capability-proofs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 15px; } .proof-card { background-color: #fff; border-radius: 8px; padding: 20px; border: 1px solid var(--border-color); box-shadow: 0 5px 15px rgba(0,0,0,0.05); } .proof-card h4 { font-size: 1.1rem; color: var(--primary-color); margin-top: 0; } .proof-card .behavior { font-size: 0.9rem; color: #666; min-height: 60px; } .proof-card .proof { font-size: 0.85rem; font-weight: bold; color: #28a745; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-color); }
+        .snapshot-container { display: flex; align-items: stretch; position: relative; background-color: #fff; padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); } .snapshot-divider { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 30px; flex-shrink: 0; } .snapshot-line { width: 3px; background: linear-gradient(to bottom, #ccc, var(--primary-color)); flex-grow: 1; } .transition-point { background-color: var(--primary-color); color: white; border-radius: 50%; width: 100px; height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 0.9rem; font-weight: bold; box-shadow: 0 0 15px rgba(0, 51, 102, 0.3); z-index: 10; } .transition-point .icon { font-size: 1.8rem; } .snapshot-card { flex-basis: 50%; padding: 20px; } .card-header { margin-bottom: 20px; } .card-header .stage { font-size: 0.85rem; color: #777; } .card-header .period { font-size: 1.6rem; color: var(--primary-color); font-weight: bold; } .tag-group { margin-bottom: 20px; } .tag-group-title { font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; font-size: 0.85rem; } .tag-group-title .icon { font-size: 1.1rem; margin-right: 8px; } .tags-wrapper { display: flex; flex-wrap: wrap; gap: 8px; } .tag { padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; } .tag.position { background-color: #d1ecf1; color: #0c5460; } .tag.ability { background-color: #e2e3e5; color: #383d41; } .tag.role { background-color: #d4edda; color: #155724; } .hook-text { margin-top: 20px; padding-top: 15px; font-style: italic; color: #555; font-size: 0.9rem; border-top: 1px solid var(--border-color); }
+        .role-allocation-container { display: flex; align-items: center; gap: 40px; background: #fff; padding: 40px; border-radius: 8px; border: 1px solid var(--border-color); } .chart-container { width: 250px; height: 250px; flex-shrink: 0; position: relative; } .role-descriptions { flex-grow: 1; } .role-item { margin-bottom: 15px; display:flex; align-items: start;} .role-color-box { width: 15px; height: 15px; margin-right: 10px; margin-top: 5px; flex-shrink: 0; border-radius: 3px; } .role-item h4 { margin:0; color: var(--primary-color); } .role-item p { margin: 5px 0 0 0; font-size: 0.9rem; color: #555; } .role-insight { margin-top: 20px; padding: 15px; background-color: var(--bg-color); border-radius: 5px; font-size: 0.85rem; font-style: italic; color: #444; border-left: 3px solid var(--accent-color); }
+        .achievements-grid { display: grid; grid-template-columns: 1fr; gap: 25px; } .achievement-card { background-color: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; display: flex; gap: 25px; align-items: flex-start; } .achievement-icon { font-size: 2rem; color: var(--accent-color); margin-top: 5px; } .achievement-data h3 { margin: 0; color: var(--primary-color); } .achievement-data .kpi { font-size: 1.3rem; font-weight: bold; color: var(--accent-color); } .achievement-data p { margin: 10px 0; } .view-case-study { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; transition: all 0.3s ease; } .view-case-study:hover { background: var(--accent-color); color: #fff; }
+        .playbook-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; } .playbook-card { background-color: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; } .playbook-card .sub-title { font-weight: bold; color: #555; font-size: 0.9rem; margin-bottom: 10px; display: block; } .playbook-card h3 { font-size: 1.3rem; color: var(--primary-color); margin-top: 0; margin-bottom: 15px; } .playbook-card .hook-summary { font-size: 0.95rem; color: #555; margin-bottom: 20px; flex-grow: 1; } .playbook-card .hook-summary b { color: var(--primary-color); } .view-playbook-btn { background: none; border: 1px solid var(--primary-color); color: var(--primary-color); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; transition: all 0.3s ease; align-self: flex-start; margin-top: auto; } .view-playbook-btn:hover { background: var(--primary-color); color: #fff; }
+        .experience-item { margin-bottom: 25px; border-left: 3px solid var(--accent-color); padding-left: 20px; } .experience-item h3 { margin: 0; color: var(--primary-color); } .experience-item .company { font-weight: bold; } .experience-item .date { color: #777; font-size: 0.9rem; } .experience-item ul { padding-left: 20px; }
+        .competency-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; background: #fff; padding: 40px; border-radius: 8px; border: 1px solid var(--border-color); } .competency-column h3 { font-size: 1.3rem; color: var(--primary-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; margin-top: 0; } .sub-section { margin-bottom: 30px; } .sub-section h4 { font-size: 1rem; color: #555; margin-bottom: 15px; display: flex; align-items: center; } .skills-cloud { display: flex; flex-wrap: wrap; gap: 10px; } .skill-tag { background-color: #e2e3e5; color: #383d41; padding: 5px 12px; border-radius: 15px; font-size: 0.9rem; } .progress-bar-group .item { margin-bottom: 15px; } .progress-bar-group .label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; } .progress-bar { background-color: #e9ecef; border-radius: 5px; height: 10px; overflow:hidden; } .progress-bar div { background-color: var(--accent-color); height: 100%; border-radius: 5px; } .leadership-traits .trait-card { background-color: var(--bg-color); border-radius: 5px; padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--primary-color); } .leadership-traits .trait-card h4 { margin: 0 0 5px 0; font-size: 0.95rem; } .leadership-traits .trait-card p { margin: 0; font-size: 0.85rem; color: #666; } .leadership-traits .trait-card p strong { display: block; font-size: 0.9rem; color: #333; margin-bottom: 5px; }
+        .modal { position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.65); display: none; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; } .modal.is-visible { display: flex; animation: fadeIn 0.3s forwards; } .modal-content { background-color: #fff; padding: 40px; border-radius: 8px; width: 100%; max-width: 700px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin: 0; position: relative; } .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; position: absolute; top: 15px; right: 20px;} .modal-content h2 { color: var(--primary-color); margin-top: 0; } .modal-content.standard-anim { animation: slideIn 0.4s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .modal.is-visible .modal-content.fancy-anim { animation: unfold 0.6s forwards cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .modal.is-visible .fancy-anim .modal-body { opacity: 0; animation: fadeInText 0.5s 0.3s forwards ease-out; } .modal-content p strong { color: var(--primary-color); }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} } @keyframes slideIn { from {transform: translateY(-50px); opacity: 0;} to {transform: translateY(0); opacity: 1;} } @keyframes unfold { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 1; } } @keyframes fadeInText { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 1200px) { .snapshot-container, .role-allocation-container, .competency-container { flex-direction: column; grid-template-columns: 1fr;} .playbook-container { grid-template-columns: 1fr;} .snapshot-divider { width: 100%; margin: 30px 0; flex-direction: row; height: auto; } .snapshot-line { height: 3px; width: 100%; } .transition-point { margin: 0 20px; } }
+        @media (max-width: 768px) { .container { display: block; } .sidebar { position: static; width: 100%; height: auto; } .main-content { margin-left: 0; width: 100%; padding: 20px; box-sizing: border-box;} }
+    </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand"><span class="brand-mark">囍</span><div><h1>好日子排桌</h1><p>名單只留在這台裝置</p></div></div>
-    <div class="view-tabs" role="tablist">
-      <button class="tab active" data-view="list">列表排桌</button>
-      <button class="tab" data-view="map">座位圖</button>
-      <button class="tab" data-view="venue">場地配置</button>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="profile">
+                <div class="profile-image"></div>
+                <h1>連怡蘭</h1> <p>Joanna Lian</p>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#summary" class="active">專業總覽</a></li>
+                <li><a href="#snapshot">職涯歷程</a></li>
+                <li><a href="#roles">現職角色</a></li>
+                <li><a href="#achievements">關鍵成就</a></li>
+                <li><a href="#philosophy">領導方式</a></li>
+                <li><a href="#experience">工作經歷</a></li>
+                <li><a href="#competency">核心能力</a></li>
+            </ul>
+            <div class="sidebar-footer"> <a href="#">聯絡我</a> </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- 第一幕 -->
+            <section id="summary" class="content-section">
+                <div class="section-header"><h2>專業總覽 / Professional Summary</h2></div>
+                <div class="summary-content-wrapper">
+                    <ul class="summary-intro-text">
+                        <li>超過十年資訊領域經驗，具備從大型製造業IT(甲方)到軟體新創(乙方)的完整跨界歷練。</li>
+                        <li>擁有從0到1打造PM團隊的實務經驗，並將成功模式轉化為團隊可依循的導入流程(SOP)。</li>
+                        <li>擅長在技術團隊與商業需求之間建立清晰的溝通橋樑，凝聚跨部門共識，共同推進專案目標。</li>
+                    </ul>
+                    <div class="summary-module">
+                        <h4 style="color: var(--primary-color); margin-top: 40px; margin-bottom: 20px;">我的能力進化軌跡：</h4>
+                        <div class="evolution-path">
+                            <span class="step">從系統開發實作</span><span class="arrow">➡️</span>
+                            <span class="step">到建立團隊與流程</span><span class="arrow">➡️</span>
+                            <span class="step">再到參與產品策略</span>
+                        </div>
+                    </div>
+                    <div class="summary-module">
+                        <div class="capability-proofs">
+                            <div class="proof-card"><h4>打造可持續的團隊戰力</h4><p class="behavior">將個人成功經驗，轉化為團隊可依循的SOP與成長路徑。</p><p class="proof">✅ 成果亮點: 從零建立PM團隊，奠定穩固協作流程，並創造90%核心成員高留任率，成為公司穩定交付的基石。</p></div>
+                            <div class="proof-card"><h4>共創數據驅動價值</h4><p class="behavior">在數位工具與傳統經驗間建立橋樑，找到共通語言，讓數據成為大師的新武器。</p><p class="proof">✅ 價值印證: 首創「雙顧問」合作模式，獲TPS顧問盛讚「輔導效率提速3倍」，將寶貴經驗成功轉化為可規模化的商業價值。</p></div>
+                            <div class="proof-card"><h4>策略影響</h4><p class="behavior">擅長在混沌中定義問題，並用MVP策略，以最小成本驗證解決方案。</p><p class="proof">✅ 策略影響： 主導設計的「資料驗證工具」(MVP)，成功突破了多個專案的導入僵局，成為解決核心痛點、重拾客戶信心的關鍵</p></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 第二幕 -->
+            <section id="snapshot" class="content-section"><div class="section-header"><h2>職涯歷程 / Career Growth</h2></div><div class="snapshot-container"><div class="snapshot-card"><div class="card-header"><div class="period">技術深耕，解決複雜問題 (2014-2022)</div><div class="stage">中良工業</div></div><div class="tag-group"><div class="tag-group-title"><span class="icon">🏆</span>職稱</div><div class="tags-wrapper"><span class="tag position">SAP 工程師</span><span class="tag position">課長</span></div></div><div class="tag-group"><div class="tag-group-title"><span class="icon">⚙️</span>能力</div><div class="tags-wrapper"><span class="tag ability">SAP FI/CO</span><span class="tag ability">ABAP 開發</span><span class="tag ability">跨國導入</span></div></div><div class="tag-group"><div class="tag-group-title"><span class="icon">👤</span>角色</div><div class="tags-wrapper"><span class="tag role">技術專家</span><span class="tag role">流程優化者</span></div></div><p class="hook-text">以深厚的技術底蘊，親手解決從台灣到越南的複雜系統與企業流程問題。</p></div><div class="snapshot-divider"><div class="snapshot-line"></div><div class="transition-point"><div class="icon">🚀</div><div>關鍵轉型</div></div><div class="snapshot-line"></div></div><div class="snapshot-card"><div class="card-header"><div class="period">建立團隊，打造解決方案  (2022-至今)</div><div class="stage">以恩資訊 (新創軟體原廠)</div></div><div class="tag-group"><div class="tag-group-title"><span class="icon">🏆</span>職稱</div><div class="tags-wrapper"><span class="tag position">經理</span><span class="tag position">專案經理</span></div></div><div class="tag-group"><div class="tag-group-title"><span class="icon">⚙️</span>能力</div><div class="tags-wrapper"><span class="tag ability">團隊建立</span><span class="tag ability">軟體服務導入方法</span><span class="tag ability">產品策略</span></div></div><div class="tag-group"><div class="tag-group-title"><span class="icon">👤</span>角色</div><div class="tags-wrapper"><span class="tag role">團隊教練</span><span class="tag role">流程設計者</span></div></div><p class="hook-text">從解決單一問題，轉向打造一個能自我成長、持續解決問題的團隊與制度。</p></div></div></section>
+            
+            <!-- 第三幕 -->
+            <section id="roles" class="content-section"><div class="section-header"><h2>我現職工作的多重角色</h2></div><div class="role-allocation-container"><div class="chart-container"><canvas id="roleChart"></canvas></div><div class="role-descriptions"><div class="role-item"><div class="role-color-box" style="background-color: #007bff;"></div><div><h4>產品策略 (50%)</h4><p>負責第一線需求把關、參與產品藍圖規劃、設計解決方案。</p></div></div><div class="role-item"><div class="role-color-box" style="background-color: #28a745;"></div><div><h4>團隊領導 (30%)</h4><p>負責團隊建構、人才培育、設計並優化跨部門協作流程。</p></div></div><div class="role-item"><div class="role-color-box" style="background-color: #ffc107;"></div><div><h4>專案交付 (10%)</h4><p>擔任專案最終決策者與指導者。(註：成功賦能團隊後，已將重心從第一線執行轉為策略指導)</p></div></div><div class="role-item"><div class="role-color-box" style="background-color: #6c757d;"></div><div><h4>生態圈合作 (10%)</h4><p>與外部TPS顧問協同作戰，共同創造並驗證商業價值。</p></div></div><div class="role-insight"><strong>我的價值重心：</strong> 已從專案的親手執行，轉向產品策略與團隊建構。</div></div></div></section>
+            
+            <!-- 第四幕 -->
+            <section id="achievements" class="content-section"><div class="section-header"><h2>關鍵成就 / Key Achievements</h2></div><p>基於上述多重角色，我在不同維度上為組織創造了具體價值：</p><div class="achievements-grid"><div class="achievement-card"><div class="achievement-icon">📈</div><div class="achievement-data"><h3>指標性專案成功，撬動生態圈商業價值</h3><p>主導導入的企業，其成效獲第三方權威認可，並直接轉化為新的商業機會。</p><div><span class="kpi">輔導效率提速 3 倍</span><span style="margin: 0 10px;">|</span><span class="kpi">Lead Time -25%</span></div></div><button class="view-case-study" onclick="showModal('case1')">查看案例詳情</button></div><div class="achievement-card"><div class="achievement-icon">👥</div><div class="achievement-data"><h3>從零打造PM團隊與高效協作體系</h3><p>在無PM、無流程的挑戰下，不僅建立團隊，更沉澱了可持續的人才培育與協作模式。</p><div><span class="kpi">團隊留任率 90%</span></div></div><button class="view-case-study" onclick="showModal('case2')">查看案例詳情</button></div><div class="achievement-card"><div class="achievement-icon">🏗️</div><div class="achievement-data"><h3>前瞻性重構核心架構，奠定產品長期發展</h3><p>主動預見潛在的產品危機，提前主導解決方案，將團隊從“被動救火”轉為“主動預備”。</p><div><span class="kpi">主導方案成爲新一代核心架構</span></div></div><button class="view-case-study" onclick="showModal('case3')">查看案例詳情</button></div></div></section>
+            
+            <!-- 第五幕 -->
+            <section id="philosophy" class="content-section"><div class="section-header"><h2>我的領導方式/My Approach to Leadership</h2></div><div class="playbook-container"><div class="playbook-card"><span class="sub-title">剛性策略：原則 Principle</span><h3>追本溯源：釐清問題根源，而非表面症狀</h3><div class="hook-summary"><p><b>核心情境：</b> 當產品演算法因過於複雜而無法取得客戶信任時，團隊的精力大多消耗在表層的邏輯爭辯上。</p><p><b>我的切入點：</b> 我判斷問題的根源可能不在於演算法本身，而在於更基礎的資料認知差異。為此，我主導設計了一款MVP工具以驗證此假設。</p></div><button class="view-playbook-btn" onclick="fancyShowModal('playbook1')">查看案例細節 →</button></div><div class="playbook-card"><span class="sub-title">柔性領導：同理心 Empathy</span><h3>建立規則，凝聚團隊</h3><div class="hook-summary"><p><b>核心情境：</b> 團隊曾因職責與溝通流程不清，陷入「PM vs. RD」誰對誰錯的內耗僵局，專案進度停滯。</p><p><b>我的切入點：</b> 我認為解決方案不在於評判個人對錯，而在於重建一套讓所有人都能依循的協作規則。為此，我主導設計了新的溝通機制與SLA。</p></div><button class="view-playbook-btn" onclick="fancyShowModal('playbook2')">查看案例細節 →</button></div></div></section>
+            
+            <!-- 第六幕 (MODIFIED SECTION START) -->
+            <section id="experience" class="content-section">
+                <div class="section-header"><h2>工作經歷 / Work Experience</h2></div>
+                <div class="experience-item">
+                    <h3>經理</h3>
+                    <div class="company">以恩資訊股份有限公司 (新創軟體原廠)</div>
+                    <div class="date">2022年 - 至今 (共 3+ 年)</div>
+                    <ul>
+                        <li><strong>管理範疇：</strong> 負責建立並領導一支5人產品服務團隊 (4 PM + 1 助理)。</li>
+                        <li><strong>核心職責：</strong> 涵蓋軟體導入專案管理、產品路線圖規劃、團隊人才培育、以及跨部門協作流程的建立與優化。</li>
+                    </ul>
+                </div>
+                <div class="experience-item">
+                    <h3>課長 / SAP 工程師</h3>
+                    <div class="company">中良工業股份有限公司 (大型製造業)</div>
+                    <div class="date">2014年 - 2022年 (共 8 年)</div>
+                    <ul>
+                        <li><strong>技術職責：</strong> 負責台灣與越南廠區的SAP FI/CO模組導入、客製化開發與日常維運，並主導跨國專案的流程整合。</li>
+                        <li><strong>管理職責：</strong> 晉升課長後，負責管理SAP團隊的專案執行與日常工作。</li>
+                    </ul>
+                </div>
+            </section>
+            <!-- (MODIFIED SECTION END) -->
+            
+            <!-- 第七幕 -->
+            <section id="competency" class="content-section">
+                <div class="section-header"><h2>核心能力盤點 / Core Competency Matrix</h2></div>
+                <div class="competency-container">
+                    <div class="competency-column">
+                        <h3>硬實力 / 專業領域</h3>
+                        <div class="sub-section">
+                            <h4>💼&nbsp; 業務領域知識 (Business Domain Expertise)</h4>
+                            <div class="skills-cloud">
+                                <span class="skill-tag">企業核心流程: SAP (FI/CO/MM/SD)</span>
+                                <span class="skill-tag">生產排程實務</span>
+                                <span class="skill-tag">TPS 理論與應用</span>
+                            </div>
+                        </div>
+                        <div class="sub-section">
+                            <h4>📊&nbsp; 數據分析與洞察 (Data Analysis & Insights)</h4>
+                            <div class="skills-cloud">
+                                <span class="skill-tag">Power BI</span>
+                                <span class="skill-tag">FineReport</span>
+                                <span class="skill-tag">MS SQL (資料需求定義)</span>
+                                <span class="skill-tag">Excel (進階分析)</span>
+                            </div>
+                        </div>
+                        <div class="sub-section">
+                            <h4>⚙️&nbsp; 程式開發與流程建構 (Programming & Process Building)</h4>
+                            <div class="skills-cloud">
+                                <span class="skill-tag">ERP 開發: ABAP</span>
+                                <span class="skill-tag">流程引擎: BPM (Agentflow)</span>
+                                <span class="skill-tag">Web 技術: Java</span>
+                            </div>
+                        </div>
+                        <div class="sub-section">
+                            <h4>📋&nbsp; 產品與專案管理 (Product & Project Management)</h4>
+                            <div class="skills-cloud">
+                                <span class="skill-tag">使用者故事地圖</span>
+                                <span class="skill-tag">敏捷 (Agile)</span>
+                                <span class="skill-tag">MVP 策略</span>
+                                <span class="skill-tag">Jira</span>
+                                <span class="skill-tag">XMind</span>
+                            </div>
+                        </div>
+                        <div class="sub-section">
+                            <h4>✨&nbsp; AI 生產力應用 (AI Productivity Applications)</h4>
+                            <div class="skills-cloud">
+                                <span class="skill-tag">LLMs (ChatGPT/Gemini)</span>
+                                <span class="skill-tag">Notion AI</span>
+                            </div>
+                        </div>
+                        <div class="sub-section">
+                            <h4>🎯&nbsp; 核心領域掌握度 (Core Domain Mastery)</h4>
+                            <div class="progress-bar-group">
+                                <div class="item">
+                                    <div class="label"><span>軟體產品導入與顧問服務</span><span>精通 (Expert)</span></div>
+                                    <div class="progress-bar"><div style="width: 95%;"></div></div>
+                                </div>
+                                <div class="item">
+                                    <div class="label"><span>ERP企業資源規劃流程</span><span>精通 (Expert)</span></div>
+                                    <div class="progress-bar"><div style="width: 90%;"></div></div>
+                                </div>
+                                <div class="item">
+                                    <div class="label"><span>生產管理與精實製造 (TPS)</span><span>熟練 (Proficient)</span></div>
+                                    <div class="progress-bar"><div style="width: 80%;"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="competency-column">
+                        <h3>軟實力 / 人格特質</h3>
+                        <div class="sub-section">
+                            <h4>💡&nbsp; 我的思考習慣 (Core Mindsets)</h4>
+                            <div class="leadership-traits">
+                                <div class="trait-card">
+                                    <h4>系統思考 (Systems Thinking)</h4>
+                                    <p><strong>建立規則，而不只是救火。</strong>找出問題的根本原因，建立能預防問題重複發生的流程。</p>
+                                </div>
+                                <div class="trait-card">
+                                    <h4>使用者視角 (User-Centric)</h4>
+                                    <p><strong>最好的點子，來自第一線現場。</strong>現地現物，親自進入使用者的工作場景，去理解他們真正的痛點和需求。</p>
+                                </div>
+                                <div class="trait-card">
+                                    <h4>從錯誤中學習 (Growth Mindset)</h4>
+                                    <p><strong>把每一次教訓，變成團隊的資產。</strong>持續學習並內化，將學到的經驗，轉化為更精準的團隊方法。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sub-section">
+                            <h4>👥&nbsp; 我的領導特質 (Key Leadership Traits)</h4>
+                            <div class="leadership-traits">
+                                <div class="trait-card">
+                                    <h4>主動多做一步 (Ownership)</h4>
+                                    <p><strong>解決沒人負責，但對公司很重要的事。</strong>曾主動開發BI工具，只因我認為管理層需要更好的決策數據。</p>
+                                </div>
+                                <div class="trait-card">
+                                    <h4>當好「翻譯官」 (Trust Building)</h4>
+                                    <p><strong>讓不同世界的人，聽懂彼此的話。</strong>擅長在技術、業務與顧問之間建立共識，贏得跨領域的信任。</p>
+                                </div>
+                                <div class="trait-card">
+                                    <h4>有原則的溝通 (Principled Influence)</h4>
+                                    <p><strong>先理解對方的擔憂，再提出更好的方案。</strong>面對不同意見，我不會直接說「不」，而是引導對方看見一個雙贏的可能。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
-    <div class="header-actions">
-      <button class="button ghost" id="printBtn">匯出 PDF</button>
-      <button class="button ghost" id="backupBtn">下載備份</button>
-      <label class="button ghost file-label">讀取備份<input id="backupInput" type="file" accept=".json"></label>
-      <button class="button primary" id="exportBtn">匯出 Excel</button>
+
+    <div id="case1Modal" class="modal"><div class="modal-content standard-anim"><span class="close-btn" onclick="closeModal('case1')">&times;</span><h2>案例詳情：指標性專案成功，撬動生態圈商業價值</h2><p><strong>挑戰：</strong> 我們的產品內建了TPS精神，但市場上最懂TPS的顧問們，卻普遍將我們視為搶生意的威脅，而非夥伴。最大的挑戰不是技術，而是如何打破這層懷疑，證明我們的數位工具，是他們最強的助力，而非替代品。</p><p><strong>任務：</strong> 我的任務，是與一位願意合作的資深顧問，透過一個實戰專案，讓他親身體驗到：我們的系統，能如何將他數十年的寶貴經驗，轉化為可被數據驗證、可被快速複製的強大能力。</p><p><strong>行動：</strong> 我全程與顧問並肩作戰。我不僅是系統的專家，更是他與數據之間的「翻譯官」。我耐心傾聽他的診斷思路，然後在系統上即時呈現數據洞察，讓他親眼看到自己的經驗被量化、被驗證。我們一起讓改善的成果，從「感覺有效」，變成了「數據證明有效」，成功為客戶達成<strong>Lead Time由38天縮短至10天(-74%)</strong>、<strong>庫存周轉率提升5%</strong>的顯著效益。</p><p><strong>成果與影響：</strong> 這是一次真正的破冰。顧問從最初的懷疑，變成了我們最熱情的擁護者，公開盛讚我們的系統讓他的<strong>「輔導效率提速3倍」</strong>。這句來自權威的真心話，徹底打開了市場。我們證明了這不是零和遊戲，而是能把市場的餅做大的共贏模式，成功為公司建立了一個全新的生態系。</p></div></div>
+    <div id="case2Modal" class="modal"><div class="modal-content standard-anim"><span class="close-btn" onclick="closeModal('case2')">&times;</span><h2>案例詳情：從零打造PM團隊與高效協作體系</h2><p><strong>挑戰：</strong> 我加入時，面對的是一個典型的新創場景：充滿熱情，但也缺乏秩序。沒有PM團隊，沒有標準流程，導致專案交付的品質與時程都極不穩定。最困難的不是缺少流程，而是缺少「方向」。我建立的任何制度，都將成為公司的第一個範本，所以從一開始，方向就必須走對。</p><p><strong>任務：</strong> 我的任務，不僅僅是招募幾个人。我必須從零開始，為公司定義出「什麼是好的專案管理」，並建立一套能將混亂的想法，轉化為穩定交付成果的團隊與協作體系。這套體系必須能自我成長，而不是凡事依賴我。</p><p><strong>行動：</strong>這是一個摸索前進的過程，我將重心放在兩個最根本的問題上：「找對人」與「建立制度」。<br>1. <strong>找對人，從經驗中學習：</strong> 在新創團隊，每一次的人員異動都成本高昂。我深刻反思了團隊初期的那次人員離開，這個教訓讓我意識到，我們需要的不僅是履歷漂亮的人，更是能立即上手的實戰人才。基於此，我重新設計了招募流程，加入能力驗證，確保我們找到「對」的人。<br>2. <strong>建立制度，讓團隊成長：</strong> 導入「大PM帶小PM」的教練制，讓知識得以傳承。</p><p><strong>成果與影響：</strong> 最終，我建立了一支士氣高昂、高達<strong>90%留任率</strong>的穩定團隊。最大的改變，是團隊的精力不再耗於摸索與內耗，而是能專注於高效地解決問題，成功為公司奠定了穩定的專案交付基礎，讓團隊能專注於創造真正的價值。</p></div></div>
+    <div id="case3Modal" class="modal"><div class="modal-content standard-anim"><span class="close-btn" onclick="closeModal('case3')">&times;</span><h2>案例詳情：前瞻性地主導解決方案</h2><p><strong>挑戰：</strong> 我透過客戶場景推演，敏銳地意識到：我們的核心演算法中，埋著一顆「定時炸彈」——一個結構性缺陷，它會在未來某個複雜場景下引爆，導致整個產品崩潰。</p><p><strong>最艱難的部分：</strong> 如何說服一個正在高速衝刺的團隊，為了一個「還沒發生」的危機而停下腳步？這不僅是技術問題，更是對橫向影響力與向上管理的考驗。</p><p><strong>我的行動：</strong><br>我的做法是「讓未來發生」：我主動發起「壓力測試」工作坊，將抽象的風險，拆解成RD團隊能親眼「看見」的具體客戶場景。在建立共識後，我帶領團隊從根本上構思了一個更具擴展性的全新架構方案，作為我們的「防火計劃」。</p><p><strong>成果與影響：</strong> 成果超乎預期。雖然方案初期被暫時擱置，但已在團隊中打下認知基礎。數月後，當預測的危機真的發生時，團隊並未陷入恐慌。因為「早有準備」，公司跳過了數週的研究設計階段，直接採納了我們早已成型的方案進行決策。最終，我主導設計的新架構，被正式採納為後續所有新功能開發的指導原則。</p></div></div>
+    
+    <div id="playbook1Modal" class="modal">
+        <div class="modal-content fancy-anim">
+            <span class="close-btn" onclick="closeModal('playbook1')">&times;</span>
+            <div class="modal-body">
+                <h2>追本溯源，釐清問題根源</h2>
+                <p><strong>挑戰：</strong>產品的核心演算法像個「黑盒子」，客戶無法理解也無法信任。這不只是技術瓶頸，而是一場信任危機：多個專案因此卡關，客戶的耐心也正被消磨殆盡。</p>
+                <p><strong>我的任務：</strong>身為第一線的PM，我能直接感受到客戶的挫折。我的任務不僅是安撫情緒，而是必須退後一步，從根本上重新診斷問題，並提出一個能立刻見效的產品解方來扭轉局面。</p>
+                <p><strong>我的行動：</strong>我的判斷是：問題的根源不在演算法，而在更前端的「資料認知」。所以我沒有要求RD去修改複雜的核心，而是採取了務實的MVP策略。我從使用者視角，規劃了一個極簡但最核心的「基礎資料驗證工具」，它的唯一目的，就是讓雙方在導入初期，能快速對齊最源頭的數據。</p>
+                <p><strong>成果與影響：</strong>這個輕量級的工具一上線，立刻就在一個卡關已久的專案中，精準定位出雙方對BOM的認知差異。問題被快速收斂，客戶的信任也開始回籠。這次經歷讓我深刻體會到，我的角色不只是「執行」專案，而是有能力「定義」能從根本解決問題的產品。</p>
+            </div>
+        </div>
     </div>
-  </header>
+    <div id="playbook2Modal" class="modal">
+        <div class="modal-content fancy-anim">
+            <span class="close-btn" onclick="closeModal('playbook2')">&times;</span>
+            <div class="modal-body">
+                <h2>建立規則，凝聚團隊</h2>
+                <p><strong>挑戰：</strong>團隊曾一度陷入典型的「PM vs. RD」內耗僵局。PM在前線急需功能支援，感覺RD不給力；RD則覺得自己總是被打斷，疲於應付各種緊急插件。團隊間的信任開始損耗，專案進度也因此停滯。我意識到，這不是誰對誰錯的問題，而是我們缺少一套共同的遊戲規則。</p>
+                <p><strong>我的任務：</strong>我的任務不是去評判個案的對錯，那只會加劇對立。我必須建立一套清晰、公平且所有人都認同的協作流程，讓團隊的溝通有法可循，從而將精力從「互相拉扯」轉回到「解決問題」這個共同目標上。</p>
+                <p><strong>我的行動：</strong>我做的第一件事，是拉著RD Leader一起，不是討論問題，而是共同設計解決方案。我們一起定義了標準化的Bug回報範本，確保RD能一次性收到完整資訊；同時，我們也設立了每日兩次固定的「對焦會議」與分級的SLA。這個新機制，既保護了RD的專注時間，也給了PM清晰的預期和承諾。</p>
+                <p><strong>成果與影響：</strong>這套「規則」推行後，最明顯的改變是團隊的氛圍。大家不再互相猜測或埋怨，因為每個人都知道該期待什麼、該如何協作。無謂的內耗消失了，團隊的信任感和交付效率都顯著回升。這次經歷讓我堅信，一個好的領導者，有時最重要的工作，就是為團隊鋪設一條能順暢前行的軌道。</p>
+            </div>
+        </div>
+    </div>
 
-  <section class="stats" aria-label="座位統計">
-    <article><span>賓客總數</span><strong id="statTotal">0</strong></article>
-    <article><span>已安排</span><strong id="statAssigned">0</strong></article>
-    <article><span>待安排</span><strong id="statWaiting">0</strong></article>
-    <article><span>舒適座位</span><strong id="statComfort">22</strong></article>
-    <article><span>最大容量</span><strong id="statHard">23</strong></article>
-    <article class="extra-stat"><span>已用加位</span><strong id="statExtra">0</strong></article>
-  </section>
-
-  <main class="workspace">
-    <aside class="guest-panel">
-      <div class="panel-heading panel-heading-simple"><div><p class="eyebrow">尚未入席</p><h2>待分配群組 <span id="waitingBadge">0</span></h2></div></div>
-      <div class="guest-tools">
-        <div class="guest-tools-title">名單工具</div>
-        <div class="guest-tool-actions"><button class="button primary" id="openImportBtn">匯入 Excel</button><a class="button ghost" href="排桌匯入檔範例.xlsx" download="排桌匯入檔範例.xlsx">下載範例</a></div>
-      </div>
-      <label class="search"><span>搜尋</span><input id="searchInput" placeholder="群組、分類或姓名"></label>
-      <div class="filter-row"><select id="categoryFilter"><option value="">全部分類</option></select><button class="text-button danger" id="clearBtn">清除全部</button></div>
-      <div id="waitingList" class="waiting-list"></div>
-      <button class="add-manual" id="manualBtn">＋ 手動新增群組</button>
-    </aside>
-
-    <section class="board-panel">
-      <div class="board-heading"><div><p class="eyebrow">拖曳即可移動</p><h2>桌次配置</h2><p>拖姓名移動單人；拖群組標題移動整組。</p></div><button class="button secondary" id="addTableBtn">＋ 新增桌次</button></div>
-      <div id="mapTools" class="map-tools" hidden>
-        <div class="map-tool-actions"><label class="button primary file-label">上傳場地底圖<input id="venueImageInput" type="file" accept="image/png,image/jpeg,image/webp"></label><button class="button secondary" id="quickPlaceBtn">快速標記桌位</button><button class="button ghost" id="toggleBackgroundBtn">隱藏底圖</button><button class="button ghost" id="clearBackgroundBtn">移除底圖</button></div>
-        <div id="unplacedPanel" class="unplaced-panel"><strong>未放置桌次</strong><span id="unplacedHint">上傳場地底圖後，可將桌次放到正確位置。</span><div id="unplacedTables" class="unplaced-list"></div></div>
-      </div>
-      <div id="tableBoard" class="table-board list-view"></div>
-    </section>
-  </main>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <dialog id="importDialog">
-    <form method="dialog" class="dialog-card wide">
-      <div class="dialog-title"><div><p class="eyebrow">Excel 名單</p><h2>匯入或同步賓客名單</h2></div><button class="icon-button close-dialog" value="cancel" aria-label="關閉">×</button></div>
-      <div class="dropzone" id="dropzone"><strong>選擇或拖入 Excel 檔案</strong><p>支援 .xlsx；資料只在瀏覽器內解析，不會上傳。</p><div class="import-file-actions"><label class="button primary file-label">選擇檔案<input id="excelInput" type="file" accept=".xlsx"></label></div></div>
-      <div id="importPreview" class="import-preview empty">尚未選擇檔案</div>
-      <div class="dialog-actions"><button value="cancel" class="button ghost">取消</button><button type="button" id="confirmImportBtn" class="button primary" disabled>確認匯入</button></div>
-    </form>
-  </dialog>
-
-  <dialog id="tableDialog"><form method="dialog" class="dialog-card"><div class="dialog-title"><h2 id="tableDialogTitle">桌次設定</h2><button class="icon-button" value="cancel">×</button></div><label>桌名<input id="tableName"></label><div class="two-cols"><label>舒適人數<input id="comfortLimit" type="number" min="1"></label><label>絕對上限<input id="hardLimit" type="number" min="1"></label></div><p class="hint">超過舒適人數會提醒；絕對上限不能超過。</p><div class="dialog-actions"><button type="button" id="deleteTableBtn" class="button ghost" style="margin-right:auto;color:#a63f3f">刪除桌次</button><button value="cancel" class="button ghost">取消</button><button type="button" id="saveTableBtn" class="button primary">儲存</button></div></form></dialog>
-
-  <dialog id="splitDialog"><form method="dialog" class="dialog-card"><div class="dialog-title"><h2>安排部分成員</h2><button class="icon-button" value="cancel">×</button></div><p id="splitMessage"></p><div class="capacity-options" id="capacityOptions"></div><label>自訂安排人數<input id="splitCount" type="number" min="1"></label><div class="dialog-actions"><button value="cancel" class="button ghost">取消</button><button type="button" id="confirmSplitBtn" class="button primary">確認安排</button></div></form></dialog>
-
-  <dialog id="manualDialog"><form method="dialog" class="dialog-card"><div class="dialog-title"><h2>新增群組</h2><button class="icon-button" value="cancel">×</button></div><label>分類<input id="manualCategory" placeholder="例如：共同好友"></label><label>群組名稱<input id="manualName" placeholder="例如：同事朋友"></label><div class="two-cols"><label>人數<input id="manualCount" type="number" min="1" value="1"></label><label>備註<input id="manualNote"></label></div><div class="dialog-actions"><button value="cancel" class="button ghost">取消</button><button type="button" id="saveManualBtn" class="button primary">新增</button></div></form></dialog>
-
-  <dialog id="personDialog"><form method="dialog" class="dialog-card"><div class="dialog-title"><h2>編輯賓客</h2><button class="icon-button" value="cancel">×</button></div><label>顯示姓名<input id="personName"></label><div class="two-cols"><label><input id="personChild" type="checkbox" style="width:auto"> 需要兒童座椅</label><label><input id="personVeg" type="checkbox" style="width:auto"> 素食</label></div><div class="dialog-actions"><button type="button" id="returnWaitingBtn" class="button ghost" style="margin-right:auto">移回待分配</button><button value="cancel" class="button ghost">取消</button><button type="button" id="savePersonBtn" class="button primary">儲存</button></div></form></dialog>
-
-  <dialog id="seatPreviewDialog"><div class="seat-preview-shell"><button class="icon-button seat-preview-close" id="closeSeatPreviewBtn" aria-label="關閉">×</button><p class="seat-preview-tip">大型座位圖｜可拖曳賓客，完成後關閉即可回到場地配置</p><div id="seatPreviewContent"></div></div></dialog>
-
-  <script src="vendor/xlsx.full.min.js"></script>
-  <script src="vendor/jszip.min.js"></script>
-  <script src="app.js?v=20260917-3"></script>
+    <script>
+        // Modal functions
+        function showModal(caseId) { const modal = document.getElementById(caseId + 'Modal'); if (modal) modal.classList.add('is-visible'); }
+        function fancyShowModal(playbookId) { const modal = document.getElementById(playbookId + 'Modal'); if (modal) modal.classList.add('is-visible'); }
+        function closeModal(modalId) { const modal = document.getElementById(modalId + 'Modal'); if (modal) modal.classList.remove('is-visible'); }
+        window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.classList.remove('is-visible'); }
+        
+        // Debounce + Scroll Spy
+        function debounce(func, wait = 20) {
+            let timeout;
+            return function(...args) { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); };
+        }
+        const sections = document.querySelectorAll('.content-section');
+        const navLinks = document.querySelectorAll('.nav-menu a');
+        function checkActiveSection() {
+            let index = sections.length;
+            while(--index && window.scrollY + window.innerHeight * 0.5 < sections[index].offsetTop) {}
+            navLinks.forEach((link) => link.classList.remove('active'));
+            if (index >= 0 && index < navLinks.length) { navLinks[index].classList.add('active'); }
+        }
+        checkActiveSection();
+        window.addEventListener('scroll', debounce(checkActiveSection, 50));
+        
+        // Doughnut Chart
+        const roleCtx = document.getElementById('roleChart')?.getContext('2d');
+        if (roleCtx) { new Chart(roleCtx, { type: 'doughnut', data: { labels: ['產品策略', '團隊領導', '專案交付', '生態圈合作'], datasets: [{ data: [50, 30, 10, 10], backgroundColor: ['#007bff', '#28a745', '#ffc107', '#6c757d'], borderColor: '#fff', borderWidth: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.label + ': ' + c.raw + '%'; }}} }, animation: { animateRotate: true, animateScale: true } } }); }
+        
+        // Radar Chart - No longer needed, but script tag is kept to avoid breaking other things.
+        // const softSkillCtx = document.getElementById('softSkillRadarChart')?.getContext('2d');
+        // if(softSkillCtx) { ... }
+    </script>
 </body>
 </html>
